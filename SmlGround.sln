@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2016
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmlGround", "SmlGround\SmlGround.csproj", "{2B4D1E4C-F9C0-4DD5-8EF1-0B7620E45AFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2B4D1E4C-F9C0-4DD5-8EF1-0B7620E45AFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B4D1E4C-F9C0-4DD5-8EF1-0B7620E45AFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B4D1E4C-F9C0-4DD5-8EF1-0B7620E45AFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B4D1E4C-F9C0-4DD5-8EF1-0B7620E45AFD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5D682661-958F-4D34-B275-B490C2284940}
+	EndGlobalSection
+EndGlobal
