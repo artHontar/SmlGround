@@ -3,7 +3,7 @@ namespace SmlGround.DataAccess.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialCreate : DbMigration
+    public partial class SocialDB : DbMigration
     {
         public override void Up()
         {
@@ -12,20 +12,17 @@ namespace SmlGround.DataAccess.Migrations
                 c => new
                     {
                         DialogId = c.Long(nullable: false, identity: true),
-                        User1Id = c.Long(),
-                        User2Id = c.Long(),
+                        UserOneId = c.Long(),
+                        UserTwoId = c.Long(),
                         CreationTime = c.DateTime(nullable: false),
-                        User_Id = c.String(maxLength: 128),
-                        User1_Id = c.String(maxLength: 128),
-                        User2_Id = c.String(maxLength: 128),
+                        UserOne_Id = c.String(maxLength: 128),
+                        UserTwo_Id = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.DialogId)
-                .ForeignKey("dbo.AspNetUsers", t => t.User_Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.User1_Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.User2_Id)
-                .Index(t => t.User_Id)
-                .Index(t => t.User1_Id)
-                .Index(t => t.User2_Id);
+                .ForeignKey("dbo.AspNetUsers", t => t.UserOne_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserTwo_Id)
+                .Index(t => t.UserOne_Id)
+                .Index(t => t.UserTwo_Id);
             
             CreateTable(
                 "dbo.Messages",
@@ -33,7 +30,7 @@ namespace SmlGround.DataAccess.Migrations
                     {
                         MessageId = c.Long(nullable: false, identity: true),
                         DialogId = c.Long(),
-                        Text = c.String(),
+                        Text = c.String(nullable: false, maxLength: 255),
                         CreationTime = c.DateTime(nullable: false),
                     })
                 .PrimaryKey(t => t.MessageId)
@@ -78,20 +75,19 @@ namespace SmlGround.DataAccess.Migrations
                 "dbo.Friends",
                 c => new
                     {
-                        User1Id = c.Long(nullable: false, identity: true),
-                        User2Id = c.Long(),
+                        FriendId = c.Long(nullable: false, identity: true),
+                        UserOneId = c.Long(),
+                        UserTwoId = c.Long(),
                         CreationTime = c.DateTime(nullable: false),
-                        User1_Id = c.String(maxLength: 128),
-                        User2_Id = c.String(maxLength: 128),
-                        User_Id = c.String(maxLength: 128),
+                        Relationship = c.String(maxLength: 54),
+                        UserTwo_Id = c.String(maxLength: 128),
+                        UserOne_Id = c.String(maxLength: 128),
                     })
-                .PrimaryKey(t => t.User1Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.User1_Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.User2_Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.User_Id)
-                .Index(t => t.User1_Id)
-                .Index(t => t.User2_Id)
-                .Index(t => t.User_Id);
+                .PrimaryKey(t => t.FriendId)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserTwo_Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.UserOne_Id)
+                .Index(t => t.UserTwo_Id)
+                .Index(t => t.UserOne_Id);
             
             CreateTable(
                 "dbo.AspNetUserLogins",
@@ -112,13 +108,28 @@ namespace SmlGround.DataAccess.Migrations
                         PostId = c.Long(nullable: false, identity: true),
                         UserId = c.Long(),
                         Image = c.Binary(),
-                        Text = c.String(),
+                        Text = c.String(maxLength: 255),
                         CreationTime = c.DateTime(nullable: false),
                         User_Id = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.PostId)
                 .ForeignKey("dbo.AspNetUsers", t => t.User_Id)
                 .Index(t => t.User_Id);
+            
+            CreateTable(
+                "dbo.Profiles",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        Avatar = c.Binary(),
+                        Birthday = c.DateTime(),
+                        City = c.String(maxLength: 54),
+                        PlaceOfStudy = c.String(maxLength: 128),
+                        Skype = c.String(maxLength: 54),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.AspNetUsers", t => t.Id)
+                .Index(t => t.Id);
             
             CreateTable(
                 "dbo.AspNetUserRoles",
@@ -132,21 +143,6 @@ namespace SmlGround.DataAccess.Migrations
                 .ForeignKey("dbo.AspNetRoles", t => t.RoleId, cascadeDelete: true)
                 .Index(t => t.UserId)
                 .Index(t => t.RoleId);
-            
-            CreateTable(
-                "dbo.Profiles",
-                c => new
-                    {
-                        Id = c.String(nullable: false, maxLength: 128),
-                        Avatar = c.Binary(),
-                        Birthday = c.DateTime(nullable: false),
-                        City = c.String(),
-                        PlaceOfStudy = c.String(),
-                        Skype = c.String(),
-                    })
-                .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.AspNetUsers", t => t.Id)
-                .Index(t => t.Id);
             
             CreateTable(
                 "dbo.AspNetRoles",
@@ -163,36 +159,32 @@ namespace SmlGround.DataAccess.Migrations
         public override void Down()
         {
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
-            DropForeignKey("dbo.Profiles", "Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Dialogs", "User2_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Dialogs", "User1_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Dialogs", "UserTwo_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Profiles", "Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.Posts", "User_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Friends", "User_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Friends", "User2_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Friends", "User1_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.Dialogs", "User_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Friends", "UserOne_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Friends", "UserTwo_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.Dialogs", "UserOne_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.Messages", "DialogId", "dbo.Dialogs");
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
-            DropIndex("dbo.Profiles", new[] { "Id" });
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
+            DropIndex("dbo.Profiles", new[] { "Id" });
             DropIndex("dbo.Posts", new[] { "User_Id" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
-            DropIndex("dbo.Friends", new[] { "User_Id" });
-            DropIndex("dbo.Friends", new[] { "User2_Id" });
-            DropIndex("dbo.Friends", new[] { "User1_Id" });
+            DropIndex("dbo.Friends", new[] { "UserOne_Id" });
+            DropIndex("dbo.Friends", new[] { "UserTwo_Id" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
             DropIndex("dbo.Messages", new[] { "DialogId" });
-            DropIndex("dbo.Dialogs", new[] { "User2_Id" });
-            DropIndex("dbo.Dialogs", new[] { "User1_Id" });
-            DropIndex("dbo.Dialogs", new[] { "User_Id" });
+            DropIndex("dbo.Dialogs", new[] { "UserTwo_Id" });
+            DropIndex("dbo.Dialogs", new[] { "UserOne_Id" });
             DropTable("dbo.AspNetRoles");
-            DropTable("dbo.Profiles");
             DropTable("dbo.AspNetUserRoles");
+            DropTable("dbo.Profiles");
             DropTable("dbo.Posts");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.Friends");

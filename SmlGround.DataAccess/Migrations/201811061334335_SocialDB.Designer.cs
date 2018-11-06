@@ -13,7 +13,7 @@ namespace SmlGround.DataAccess.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201811060630322_SocialDB"; }
+            get { return "201811061334335_SocialDB"; }
         }
         
         string IMigrationMetadata.Source

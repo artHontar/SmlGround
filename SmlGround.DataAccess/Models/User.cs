@@ -11,11 +11,21 @@ namespace SmlGround.DataAccess.Models
 {
     public class User : IdentityUser
     {
-        public DateTime RegistrationTime { get; set; }
+        public User()
+        {
+            Posts = new List<Post>();
+            Friends = new List<Friend>();
+            Dialogs = new List<Dialog>();
+        }
 
+
+        public DateTime RegistrationTime { get; set; }
         public ICollection<Post> Posts { get; set; }
         public ICollection<Friend> Friends { get; set; }
         public ICollection<Dialog> Dialogs { get; set; }
+        
+        public Profile Profile { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
         {
             var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);

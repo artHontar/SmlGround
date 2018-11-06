@@ -11,7 +11,6 @@ namespace SmlGround.DataAccess.Models
     public class Profile
     {
         [Key]
-        [ForeignKey("User")]
         public string Id { get; set; }
         public byte[] Avatar { get; set; }
         public DateTime Birthday { get; set; }

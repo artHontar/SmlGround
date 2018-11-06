@@ -54,13 +54,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Migrations\201811051417543_InitialCreate.cs" />
-    <Compile Include="Migrations\201811051417543_InitialCreate.Designer.cs">
-      <DependentUpon>201811051417543_InitialCreate.cs</DependentUpon>
+    <Compile Include="Configuration\DialogConfiguration.cs" />
+    <Compile Include="Configuration\FriendConfiguration.cs" />
+    <Compile Include="Configuration\MessageConfiguration.cs" />
+    <Compile Include="Configuration\PostConfiguration.cs" />
+    <Compile Include="Configuration\ProfileConfiguration.cs" />
+    <Compile Include="Configuration\UserConfiguration.cs" />
+    <Compile Include="Migrations\201811061334335_SocialDB.cs" />
+    <Compile Include="Migrations\201811061334335_SocialDB.Designer.cs">
+      <DependentUpon>201811061334335_SocialDB.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201811060630322_SocialDB.cs" />
-    <Compile Include="Migrations\201811060630322_SocialDB.Designer.cs">
-      <DependentUpon>201811060630322_SocialDB.cs</DependentUpon>
+    <Compile Include="Migrations\201811061340079_SocialDB1.cs" />
+    <Compile Include="Migrations\201811061340079_SocialDB1.Designer.cs">
+      <DependentUpon>201811061340079_SocialDB1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811061407358_SocialDB2.cs" />
+    <Compile Include="Migrations\201811061407358_SocialDB2.Designer.cs">
+      <DependentUpon>201811061407358_SocialDB2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DbContext.cs" />
@@ -77,11 +87,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201811051417543_InitialCreate.resx">
-      <DependentUpon>201811051417543_InitialCreate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201811061334335_SocialDB.resx">
+      <DependentUpon>201811061334335_SocialDB.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811060630322_SocialDB.resx">
-      <DependentUpon>201811060630322_SocialDB.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201811061340079_SocialDB1.resx">
+      <DependentUpon>201811061340079_SocialDB1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811061407358_SocialDB2.resx">
+      <DependentUpon>201811061407358_SocialDB2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

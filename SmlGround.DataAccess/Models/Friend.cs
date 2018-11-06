@@ -9,11 +9,12 @@ namespace SmlGround.DataAccess.Models
 {
     public class Friend
     {
-        [Key]
-        public long? User1Id { get; set; }
-        public long? User2Id { get; set; }
-        public User User1 { get; set; }
-        public User User2 { get; set; }
+        public long FriendId { get; set; }
+        public long? UserOneId { get; set; }
+        public long? UserTwoId { get; set; }
+        public User UserOne { get; set; }
+        public User UserTwo { get; set; }
         public DateTime CreationTime { get; set; }
+        public string Relationship { get; set; }
     }
 }
