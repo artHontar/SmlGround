@@ -54,6 +54,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Migrations\201811051417543_InitialCreate.cs" />
+    <Compile Include="Migrations\201811051417543_InitialCreate.Designer.cs">
+      <DependentUpon>201811051417543_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811060630322_SocialDB.cs" />
+    <Compile Include="Migrations\201811060630322_SocialDB.Designer.cs">
+      <DependentUpon>201811060630322_SocialDB.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\DbContext.cs" />
     <Compile Include="Models\Dialog.cs" />
     <Compile Include="Models\Friend.cs" />
@@ -66,6 +75,14 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201811051417543_InitialCreate.resx">
+      <DependentUpon>201811051417543_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811060630322_SocialDB.resx">
+      <DependentUpon>201811060630322_SocialDB.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
