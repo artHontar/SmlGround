@@ -15,6 +15,10 @@ namespace SmlGround.DataAccess.Configuration
         {
            ToTable("Profiles")
                 .HasKey(o => o.Id);
+            Property(o => o.Name)
+                .IsOptional();
+            Property(o => o.Surname)
+                .IsOptional();
             Property(o => o.Avatar)
                 .IsOptional();
             Property(o => o.Birthday)

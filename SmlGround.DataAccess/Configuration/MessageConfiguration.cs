@@ -12,7 +12,7 @@ namespace SmlGround.DataAccess.Configuration
     {
         public MessageConfiguration()
         {
-            ToTable("Messages").HasKey(o => o.MessageId);
+            ToTable("Messages").HasKey(o => o.MyId);
             Property(o => o.CreationTime)
                 .IsRequired();
             Property(o => o.Text)

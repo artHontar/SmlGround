@@ -1,0 +1,114 @@
+﻿@model SmlGround.Models.ProfileViewModel
+@{
+    ViewBag.Title = "Profile";
+}
+
+
+<div class="container emp-profile">
+    <form method="post">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-img">
+                    <img src='~/Image/avatar.png'/>
+                    <div class="file btn btn-lg btn-primary">
+                        Change Photo
+                        <input type="file" name="file" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="profile-head">
+                    <h5>
+                        @Html.DisplayFor(x => x.Name) @Html.DisplayFor(x => x.Surname)
+                    </h5>
+                    @*<h6>
+                        
+                    </h6>*@
+                    <p><label for="Birthday">День рождения</label>
+                       <span>
+                           @Html.DisplayFor(x => x.Birthday)
+                                           </span></p>
+                    
+                </div>
+            </div>
+            <div class="col-md-2">
+                <input type="submit" class="profile-edit-btn" name="btnAddMore" value="Edit Profile" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div>
+                    <div class="list-group" id="list-tab" role="tablist">
+                        <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">About</a>
+                        <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab" aria-controls="profile">Contact</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="row">
+                    
+                    <div class="col-8">
+                        <div class="tab-content" id="nav-tabContent">
+                            <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">
+                                
+                                <label for="Password">Город</label>
+                                @Html.DisplayFor(x => x.City)
+                                <br />
+
+                                
+                                <label for="Password">Место учёбы</label>
+                                @Html.DisplayFor(x => x.PlaceOfStudy)
+                                <br />
+
+                            </div>
+                            <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">
+                                
+                                <label for="PasswordConfirm">Skype</label>
+                                @Html.DisplayFor(x => x.Skype)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+@*<table>
+
+    <tr>
+        <td><label for="Year">Аватар</label></td>
+        <td>
+            <img style='width: 100px; height: 80px;' src='~/Image/avatar.png'/>
+        </td>
+    </tr>
+    <tr>
+        <td><label for="Email">Email</label></td>
+        <td>@Html.DisplayFor(x => x.Name)</td>
+    </tr>
+    <tr>
+        <td><label for="Year">Имя</label></td>
+        <td>@Html.DisplayFor(x => x.Surname)</td>
+    </tr>
+
+    <tr>
+        <td><label for="Password">Имя пользователя</label></td>
+        <td>@Html.DisplayFor(x => x.Birthday)</td>
+    </tr>
+    <tr>
+        <td><label for="Password">Дата рождения</label></td>
+        <td>@Html.DisplayFor(x => x.City)</td>
+    </tr>
+
+    <tr>
+        <td><label for="Password">Пароль</label></td>
+        <td>@Html.DisplayFor(x => x.PlaceOfStudy)</td>
+    </tr>
+    <tr>
+        <td><label for="PasswordConfirm">Подтвертите пароль</label></td>
+        <td>@Html.DisplayFor(x => x.Skype)</td>
+    </tr>
+
+</table>*@
+
+
+

@@ -13,10 +13,12 @@ namespace SmlGround.DataAccess.Configuration
     {
         public UserConfiguration()
         {
-            ToTable("AspNetUsers")
+            ToTable("Users")
                 .HasKey(o => o.Id);
             Property(o => o.RegistrationTime)
                 .IsRequired();
+            Property(o => o.UserName)
+                .IsOptional();
             HasRequired(c => c.Profile)
                 .WithRequiredPrincipal(o => o.User);
             HasMany(c => c.Dialogs)

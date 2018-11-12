@@ -5,14 +5,14 @@ namespace SmlGround.DataAccess.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<SmlGround.DataAccess.Models.SocialDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<SmlGround.DataAccess.EF.SocialDbContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(SmlGround.DataAccess.Models.SocialDbContext context)
+        protected override void Seed(SmlGround.DataAccess.EF.SocialDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 
