@@ -6,13 +6,9 @@ using System.Threading.Tasks;
 
 namespace SmlGround.DLL.DTO
 {
-    public class UserDTO
+    public class ProfileDTO
     {
-         
         public string Id { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string UserName { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public byte[] Avatar { get; set; }
@@ -20,7 +16,6 @@ namespace SmlGround.DLL.DTO
         public string City { get; set; }
         public string PlaceOfStudy { get; set; }
         public string Skype { get; set; }
-        public string Role { get; set; }
+
     }
-    
 }

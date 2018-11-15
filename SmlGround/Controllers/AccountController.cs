@@ -53,7 +53,7 @@ namespace SmlGround.Controllers
                     {
                         IsPersistent = true
                     }, claim);
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Profile", "Social");
                 }
             }
             return View(model);
@@ -61,7 +61,7 @@ namespace SmlGround.Controllers
         public ActionResult Logout()
         {
             AuthenticationManager.SignOut();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Profile", "Social");
         }
         public ActionResult Register()
         {
@@ -119,9 +119,24 @@ namespace SmlGround.Controllers
             
             if (operationDetails.Succeed)
             {
-                return RedirectToAction("Login", "Account", new { Email = Email });
-            }
+                UserDTO userDto = new UserDTO() {Email = Email};
+                ClaimsIdentity claim = await UserService.AutoAuthenticate(userDto);
+                if (claim == null)
+                {
+                    ModelState.AddModelError("", "Неверный логин или пароль.");
+                    return RedirectToAction("Login", "Account", new { Email = Email });
+                }
+                else
+                {
+                    AuthenticationManager.SignOut();
+                    AuthenticationManager.SignIn(new AuthenticationProperties
+                    {
+                        IsPersistent = true
+                    }, claim);
 
+                    return RedirectToAction("Profile", "Social");
+                }
+            }
             else if(operationDetails.Message == "Повторите")
                 return RedirectToAction("Confirm", "Account", new { Email = Email });
             else

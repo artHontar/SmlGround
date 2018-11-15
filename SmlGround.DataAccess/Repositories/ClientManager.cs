@@ -24,6 +24,15 @@ namespace SmlGround.DataAccess.Repositories
             Database.Profiles.Add(item);
             Database.SaveChanges();
         }
+        public Profile GetProfile(string id)
+        {
+            return Database.Profiles.Find(id);
+        }
+        public void Update(Profile item)
+        {
+            Database.Entry(item).State = EntityState.Modified;
+            Database.SaveChanges();
+        }
         public void Dispose()
         {
             Database.Dispose();

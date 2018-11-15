@@ -45,7 +45,32 @@ namespace SmlGround.DLL.Service
                 return "Пользователь с таким логином уже существует";
             }
         }
+        public void Update(ProfileDTO profileDto)
+        {
+            Profile profile = Database.ClientManager.GetProfile(profileDto.Id);
 
+            profile.Name = profileDto.Name;
+            profile.Surname = profileDto.Surname;
+            profile.Birthday = profileDto.Birthday;
+            profile.City = profileDto.City;
+            profile.PlaceOfStudy = profileDto.PlaceOfStudy;
+            profile.Skype = profileDto.Skype;
+            
+            if (profile != null)
+            {
+                Database.ClientManager.Update(profile);
+            }   
+        }
+        public void UpdateAvatar(ProfileDTO profileDto)
+        {
+            Profile profile = Database.ClientManager.GetProfile(profileDto.Id);
+            profile.Avatar = profileDto.Avatar;
+            
+            if (profile != null)
+            {
+                Database.ClientManager.Update(profile);
+            }
+        }
         public async Task<ClaimsIdentity> Authenticate(UserDTO userDto)
         {
             ClaimsIdentity claim = null;
@@ -59,14 +84,32 @@ namespace SmlGround.DLL.Service
 
             return claim;
         }
-        
-        public User FindByEmail(string Email)
+        public async Task<ClaimsIdentity> AutoAuthenticate(UserDTO userDto)
         {
-            User user = Database.UserManager.FindByEmail(Email);
-            
-            return user;
+            ClaimsIdentity claim = null;
+            //find user
+            User user = await Database.UserManager.FindByEmailAsync(userDto.Email);
+            if (user != null)
+            {
+                claim = await Database.UserManager.CreateIdentityAsync(user,
+                    DefaultAuthenticationTypes.ApplicationCookie);
+            }
+            return claim;
         }
-        
+        //public UserDTO FindByEmail(string Email)
+        //{
+        //    User user = Database.UserManager.FindByEmail(Email);
+        //    UserDTO userDto = new UserDTO {Id = user.Id,Email = user.Email, Password = user.PasswordHash, UserName = user.UserName};
+        //    return userDto;
+        //}
+        public ProfileDTO FindProfile(string Id)
+        {
+            Profile profile = Database.ClientManager.GetProfile(Id);
+            ProfileDTO userProfileDto = new ProfileDTO {Id = profile.Id, Avatar = profile.Avatar, Name = profile.Name, Surname = profile.Surname, Birthday = profile.Birthday,
+                                                      City = profile.City, PlaceOfStudy = profile.PlaceOfStudy, Skype = profile.Skype};
+            return userProfileDto;
+        }
+
         public async Task<OperationDetails> ConfirmEmail(string Token,string Email)
         {
             User user = await Database.UserManager.FindByIdAsync(Token);

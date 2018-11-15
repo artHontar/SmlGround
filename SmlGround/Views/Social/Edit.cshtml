@@ -1,0 +1,48 @@
+﻿@model SmlGround.Models.ProfileViewModel
+@{
+    ViewBag.Title = "Edit";
+}
+
+@section customcss {
+    <link rel="stylesheet" href="~/Content/regAndLogin.css" />
+    <link rel="stylesheet" href="~/Content/profile.css">
+}
+<div class="card card-1">
+    <div class="card-heading">
+
+    </div>
+    <div class="card-body">
+        <h2 class="title">Редактирование профиля</h2>
+        <form action="/Social/Edit" method="post" class="form-autoriz">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(false)
+
+            <input type="hidden" value="@Model.Id" name="Id">
+            
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Имя" value="@Model.Name" name="Name">
+            </div>
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Фамилия" value="@Model.Surname" name="Surname">
+            </div>
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="День рождения" value="@Model.Birthday" name="Birthday">
+            </div>
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Город" value="@Model.City" name="City">
+            </div>
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Место учёбы" value="@Model.PlaceOfStudy" name="PlaceOfStudy">
+            </div>
+            <div class="input-group">
+                <input type="hidden" value="@Model.Skype" name="Skype">
+            </div>
+            <div class="input-group">
+                <input type="hidden" value="@Model.IsCurrentUserProfile" name="IsCurrentUserProfile">
+            </div>
+            <div class="p-t-20">
+                <button class="btn btn--radius btn--green" type="submit">Обновить</button>
+            </div>
+        </form>
+    </div>
+</div>
