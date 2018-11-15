@@ -3,48 +3,56 @@
     ViewBag.Title = "Sign up";
 }
 
-@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-autoriz" }))
-{
-    @Html.AntiForgeryToken()
-    <h2>Регистрация</h2>
-    @Html.ValidationSummary(false)
-    <table>
-        <tr>
-            <td><label for="Email">Email</label></td>
-            <td>@Html.EditorFor(x => x.Email, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-        <tr>
-            <td><label for="Year">Имя</label></td>
-            <td>@Html.EditorFor(x => x.Name, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-        <tr>
-            <td><label for="Year">Фамилия</label></td>
-            <td>@Html.EditorFor(x => x.Surname, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-        <tr>
-            <td><label for="Password">Имя пользователя</label></td>
-            <td>@Html.EditorFor(x => x.UserName, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-        <tr>
-            <td><label for="Password">Дата рождения</label></td>
-            <td>@Html.EditorFor(x => x.Birthday, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-
-        <tr>
-            <td><label for="Password">Пароль</label></td>
-            <td>@Html.EditorFor(x => x.Password, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-        <tr>
-            <td><label for="PasswordConfirm">Подтвертите пароль</label></td>
-            <td>@Html.EditorFor(x => x.ConfirmPassword, new { htmlAttributes = new { @class = "form-control" } })</td>
-        </tr>
-
-        <tr style="text-align:right">
-            <td></td>
-            <td>
-                <input class="login-button" type="submit" value="Зарегистрировать" />
-            </td>
-        </tr>
-    </table>
+@section customcss {
+    <link rel="stylesheet" href="~/Content/regAndLogin.css" />
 }
+<div class="card card-1">
+    <div class="card-heading">
 
+    </div>
+    <div class="card-body">
+        <h2 class="title">Регистрация</h2>
+        <form action="/Account/Register" method="post" class="form-autoriz">
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(false)
+
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Email" name="Email">
+            </div>
+            <div class="row row-space">
+                <div class="col-6">
+                    <div class="input-group">
+                        <input class="input--style-1" type="text" placeholder="Name" name="Name">
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="input-group">
+                        <input class="input--style-1" type="text" placeholder="Surname" name="Surname">
+                    </div>
+                </div>
+            </div>
+            <div class="row row-space">
+                <div class="col-7">
+                    <div class="input-group">
+                        <input class="input--style-1" type="text" placeholder="Login" name="UserName">
+                    </div>
+                </div>
+                <div class="col-5">
+                    <div class="input-group">
+                        <input class="input--style-1 js-datepicker" type="text" placeholder="День рождения" name="Birthday">
+                        <i class="zmdi zmdi-calendar-note input-icon js-btn-calendar"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Пароль" name="Password">
+            </div>
+            <div class="input-group">
+                <input class="input--style-1" type="text" placeholder="Подтвердите пароль" name="ConfirmPassword">
+            </div>
+            <div class="p-t-20">
+                <button class="btn btn--radius btn--green" type="submit">Зарегистрировать</button>
+            </div>
+        </form>
+    </div>
+</div>

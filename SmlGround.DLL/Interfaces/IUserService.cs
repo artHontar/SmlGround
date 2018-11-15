@@ -15,7 +15,10 @@ namespace SmlGround.DLL.Interfaces
         Task<string> Create(UserDTO userDto);
         Task<OperationDetails> ConfirmEmail(string Token,string Email);
         Task<ClaimsIdentity> Authenticate(UserDTO userDto);
-        User FindByEmail(string Email);
+        Task<ClaimsIdentity> AutoAuthenticate(UserDTO userDto);
+        ProfileDTO FindProfile(string Id);
+        void Update(ProfileDTO profileDto);
+        void UpdateAvatar(ProfileDTO profileDto);
         Task SetInitialData(UserDTO adminDto, List<string> roles);
     }
 }

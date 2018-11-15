@@ -10,5 +10,7 @@ namespace SmlGround.DataAccess.Interface
     public interface IClientManager : IDisposable
     {
         void Create(Profile profile);
+        void Update(Profile profile);
+        Profile GetProfile(string id);
     }
 }
