@@ -68,7 +68,7 @@
     <Compile Include="Interfaces\IServiceCreator.cs" />
     <Compile Include="Interfaces\IUserService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\BinaryFormater.cs" />
+    <Compile Include="Service\CastBinaryFormatter.cs" />
     <Compile Include="Service\Sender.cs" />
     <Compile Include="Service\ServiceCreator.cs" />
     <Compile Include="Service\UserService.cs" />

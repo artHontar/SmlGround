@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Web;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
 using SmlGround.DLL.Interfaces;
 using SmlGround.DLL.Service;
 
-[assembly: OwinStartupAttribute(typeof(SmlGround.App_Start.Startup))]
+[assembly: OwinStartup(typeof(SmlGround.App_Start.Startup))]
 
 namespace SmlGround.App_Start
 {

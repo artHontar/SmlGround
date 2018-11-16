@@ -5,10 +5,10 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - My ASP.NET Application</title>
-    <link rel="stylesheet" href="~/Content/profile.css" />
-    @RenderSection("customcss",required: false)
+    <link rel="stylesheet" href="~/Content/Site.css" />
+    @RenderSection("customcss", required: false)
     @*@Styles.Render("~/Content/css")*@
-        @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/modernizr")
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
 </head>
@@ -22,44 +22,19 @@
 
                 <div class="navbar-header">
                     <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Dropdown button
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                            <a class="dropdown-item" href="#">Action</a>
-                            <a class="dropdown-item" href="#">Another action</a>
-                            <a class="dropdown-item" href="#">Something else here</a>
+                            <a class="dropdown-item" href="/Social/Profile">Профиль</a>
+                            <a class="dropdown-item" href="/Social/People">Люди</a>
+                            <a class="dropdown-item" href="/Account/Logout">Выйти</a>
                         </div>
                     </div>
                 </div>
 
             </div> 
-
-            <div class="navbar-collapse collapse">
-
-                <ul class="nav navbar-nav">
-
-                    <li>@Html.ActionLink("Wall", "Wall", "Social")</li>
-                    @*@if (!Request.IsAuthenticated)
-                    {
-                        <li>
-                            @Html.ActionLink("Login", "Login", "Account", new { @class = "nav-link" })
-                        </li>
-                        <li>
-                            @Html.ActionLink("Register", "Register", "Account", new { @class = "nav-link" })
-                        </li>
-                    }
-                    else
-                    {
-                        <li>
-                            Hello, + @User.Identity.GetUserName()
-                        </li>
-                        <li>
-                            @Html.ActionLink("Logout", "Logout", "Account", routeValues: null, htmlAttributes: new { @class = "nav-link" })
-                        </li>
-                    }*@
-                </ul>
-            </div>
+        
         </div>
     </div>
 <div class="container body-content">

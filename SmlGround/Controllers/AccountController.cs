@@ -1,43 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity.Owin;
+﻿using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using SmlGround.DataAccess.Identity;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Infrastructure;
 using SmlGround.DLL.Interfaces;
 using SmlGround.Models;
-using SmlGround.DLL.Service;
 using SmlGround.SMTP;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace SmlGround.Controllers
 {
     public class AccountController : Controller
     {
-        private IUserService UserService
-        {
-            get { return HttpContext.GetOwinContext().GetUserManager<IUserService>(); }
-        }
-        
+        private IUserService UserService => HttpContext.GetOwinContext().GetUserManager<IUserService>();
         public ApplicationSignInManager SignInManager => HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
-        private IAuthenticationManager AuthenticationManager
-        {
-            get { return HttpContext.GetOwinContext().Authentication; }
-        }
         public ActionResult Login()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginModel model)
-        {
-            
+        { 
             if (ModelState.IsValid)
             {
                 UserDTO userDto = new UserDTO { Email = model.Email, Password = model.Password };
@@ -58,15 +48,18 @@ namespace SmlGround.Controllers
             }
             return View(model);
         }
+
         public ActionResult Logout()
         {
             AuthenticationManager.SignOut();
-            return RedirectToAction("Profile", "Social");
+            return RedirectToAction("Login", "Account");
         }
+
         public ActionResult Register()
         {
             return View();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegistrationModel model)
@@ -105,6 +98,7 @@ namespace SmlGround.Controllers
             }
             return View(model);
         }
+
         [AllowAnonymous]
         public string Confirm(string Email)
         {
@@ -143,21 +137,5 @@ namespace SmlGround.Controllers
                 return RedirectToAction("Confirm", "Account", new { Email = "" });
         
         }
-
-        //await SetInitialDataAsync();
-
-        //private async Task SetInitialDataAsync()
-        //{
-        //    await UserService.SetInitialData(new UserDTO
-        //    {
-        //        Email = "artemgontar16@gmail.com",
-        //        UserName = "artemgontar16",
-        //        Password = "123456",
-        //        Birthday = new DateTime(1999, 04, 30),
-        //        Name = "Artem",
-        //        Surname = "Gontar",
-        //        Role = "admin",
-        //    }, new List<string> { "user", "admin" });
-        //}
     }
 }

@@ -1,4 +1,4 @@
-﻿@model SmlGround.Models.ProfileViewModel
+﻿@model SmlGround.Models.EditProfileViewModel
 @{
     ViewBag.Title = "Edit";
 }
@@ -36,9 +36,6 @@
             </div>
             <div class="input-group">
                 <input type="hidden" value="@Model.Skype" name="Skype">
-            </div>
-            <div class="input-group">
-                <input type="hidden" value="@Model.IsCurrentUserProfile" name="IsCurrentUserProfile">
             </div>
             <div class="p-t-20">
                 <button class="btn btn--radius btn--green" type="submit">Обновить</button>
