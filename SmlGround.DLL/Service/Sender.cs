@@ -11,7 +11,6 @@ namespace SmlGround.SMTP
     public class Sender
     {
         string display;
-        string id;
         string receiver;
         public Sender(string display, string receiver)
         {

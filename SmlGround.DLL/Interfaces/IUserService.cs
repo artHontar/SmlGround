@@ -19,6 +19,7 @@ namespace SmlGround.DLL.Interfaces
         ProfileDTO FindProfile(string Id);
         void Update(ProfileDTO profileDto);
         void UpdateAvatar(ProfileDTO profileDto);
+        List<ProfileDTO> GetAllProfiles(string search);
         Task SetInitialData(UserDTO adminDto, List<string> roles);
     }
 }

@@ -11,6 +11,7 @@ namespace SmlGround.DataAccess.Interface
     {
         void Create(Profile profile);
         void Update(Profile profile);
+        List<Profile> GetAllProfiles();
         Profile GetProfile(string id);
     }
 }
