@@ -11,8 +11,8 @@ namespace SmlGround.DataAccess.Interface
     public interface IUnitOfWork : IDisposable
     {
         ApplicationUserManager UserManager { get; }
-        IClientManager ClientManager { get; }
+        IProfileRepository ProfileManager { get; }
         ApplicationRoleManager RoleManager { get; }
-        Task SaveAsync();
+        void Save();
     }
 }
