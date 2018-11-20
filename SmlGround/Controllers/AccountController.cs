@@ -15,9 +15,14 @@ namespace SmlGround.Controllers
 {
     public class AccountController : Controller
     {
-        private IUserService UserService => HttpContext.GetOwinContext().GetUserManager<IUserService>();
+        private IUserService UserService; //=> HttpContext.GetOwinContext().GetUserManager<IUserService>();
         public ApplicationSignInManager SignInManager => HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
+
+        public AccountController(IUserService userService)
+        {
+            UserService = userService;
+        }
 
         public ActionResult Login()
         {

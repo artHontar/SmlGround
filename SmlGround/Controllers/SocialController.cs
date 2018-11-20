@@ -8,6 +8,7 @@ using SmlGround.DLL.Service;
 using SmlGround.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
@@ -17,23 +18,29 @@ namespace SmlGround.Controllers
     [Authorize]
     public class SocialController : Controller
     {
-        private IUserService UserService => HttpContext.GetOwinContext().GetUserManager<IUserService>();
+        private readonly IUserService _userService; //=> HttpContext.GetOwinContext().GetUserManager<IUserService>();
 
         public ApplicationSignInManager SignInManager => HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
 
         private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
-        
+
+        public SocialController(IUserService userService)
+        {
+            this._userService = userService;
+        }
+
+
         [ActionName("Profile")]
         public ActionResult UserProfile(string id)
         {
-            //UserDTO userDto = await UserService.FindById();
+            //UserDTO userDto = await _userService.FindById();
             if (id == null)
             {
                 id = HttpContext.User.Identity.GetUserId();
                 ViewBag.Success = TempData["Success"]?.ToString();
             }
 
-            var profileDto = UserService.FindProfile(id);
+            var profileDto = _userService.FindProfile(id);
 
             var profileViewModel = Mapper.Map<ProfileDTO, ProfileViewModel>(profileDto);
             
@@ -46,7 +53,7 @@ namespace SmlGround.Controllers
 
         public ActionResult Edit(string id)
         {
-            var profileDto = UserService.FindProfile(id);
+            var profileDto = _userService.FindProfile(id);
 
             var editProfileViewModel = Mapper.Map<ProfileDTO, EditProfileViewModel>(profileDto);
 
@@ -54,36 +61,34 @@ namespace SmlGround.Controllers
         }
 
         [HttpPost]
-        public ActionResult Edit([Bind(Include = "Id,Name,Surname,Birthday,City,PlaceOfStudy")]EditProfileViewModel profileViewModel)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Surname,Birthday,City,PlaceOfStudy")]EditProfileViewModel profileViewModel)
         {
             if (ModelState.IsValid)
             {
                 var profileDto = Mapper.Map<EditProfileViewModel, ProfileDTO>(profileViewModel);
                 
-                UserService.Update(profileDto);
+                _userService.Update(profileDto);
                 TempData["Success"] = "Изменения сохранены";
             }
             else
-            {
                 TempData["Success"] = "Не удалось сохранить изменения";
-            }
 
             //Update Profile
-            //UserDTO userDto = await UserService.FindById();
+            //UserDTO userDto = await _userService.FindById();
             return RedirectToAction("Profile", "Social");
         }
 
         [HttpPost]
         public ActionResult EditAvatar(string id, HttpPostedFileBase uploadImage)
         {
-            ProfileDTO profileDto = UserService.FindProfile(id);
+            ProfileDTO profileDto = _userService.FindProfile(id);
 
             if (ModelState.IsValid&& uploadImage != null)
             {
                 CastBinaryFormatter binaryFormatter = new CastBinaryFormatter(uploadImage);
                 
                 profileDto.Avatar = binaryFormatter.Convert();
-                UserService.UpdateAvatar(profileDto);
+                _userService.UpdateAvatar(profileDto);
                 return Json(profileDto.Avatar);
             }
 
@@ -92,15 +97,15 @@ namespace SmlGround.Controllers
 
         public ActionResult People()
         {
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(UserService.GetAllProfiles(null));//new List<ProfileViewModel>();
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(null));//new List<ProfileViewModel>();
             
             return View("People", profileViewModelList);
         } 
 
         public ActionResult FindPeople(string text)
         {
-            //var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(UserService.GetAllProfiles());//new List<ProfileViewModel>();
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(UserService.GetAllProfiles(text));//new List<ProfileViewModel>();
+            //var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles());//new List<ProfileViewModel>();
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(text));//new List<ProfileViewModel>();
             if (profileViewModelList.Count > 0)
             {
                 return PartialView("UsersList", profileViewModelList);

@@ -22,26 +22,20 @@ namespace SmlGround.DLL.Service
         }
         public List<ProfileDTO> GetAllProfiles(string search)
         {
-            List<Profile> list = database.ClientManager.GetAllProfiles();
-            List<ProfileDTO> listDto = new List<ProfileDTO>();
-            foreach (var item in list)
+            List<Profile> list = database.ProfileManager.GetAllProfiles();
+            List<ProfileDTO> listDto = list.Where(profile => string.IsNullOrEmpty(search) || profile.Name.Contains(search) || profile.Surname.Contains(search))
+            .Select(item => new ProfileDTO
             {
-                if (search == null || item.Name.IndexOf(search) != -1 || item.Surname.IndexOf(search) != -1)
-                {
-                    listDto.Add(new ProfileDTO
-                    {
-                        Id = item.Id,
-                        Name = item.Name,
-                        Surname = item.Surname,
-                        Avatar = item.Avatar,
-                        Birthday = item.Birthday,
-                        City = item.City,
-                        PlaceOfStudy = item.PlaceOfStudy,
-                        Skype = item.Skype
-
-                    });
-                }
-            }
+                Id = item.Id,
+                Name = item.Name,
+                Surname = item.Surname,
+                Avatar = item.Avatar,
+                Birthday = item.Birthday,
+                City = item.City,
+                PlaceOfStudy = item.PlaceOfStudy,
+                Skype = item.Skype
+            }).ToList();
+           
             return listDto;
         }
         public async Task<string> Create(UserDTO userDto)
@@ -57,8 +51,8 @@ namespace SmlGround.DLL.Service
                 await database.UserManager.AddToRoleAsync(user.Id, userDto.Role);
                 // create client's profile
                 var profile = new Profile { Id = user.Id, Name = userDto.Name, Surname = userDto.Surname, Birthday = userDto.Birthday };
-                database.ClientManager.Create(profile);
-                await database.SaveAsync();
+                database.ProfileManager.Create(profile);
+                database.Save();
                 return user.Id;
             }
             return "Пользователь с таким логином уже существует";
@@ -66,7 +60,7 @@ namespace SmlGround.DLL.Service
 
         public void Update(ProfileDTO profileDto)
         {
-            var profile = database.ClientManager.GetProfile(profileDto.Id);
+            var profile = database.ProfileManager.GetProfile(profileDto.Id);
 
             profile.Name = profileDto.Name;
             profile.Surname = profileDto.Surname;
@@ -75,20 +69,19 @@ namespace SmlGround.DLL.Service
             profile.PlaceOfStudy = profileDto.PlaceOfStudy;
             profile.Skype = profileDto.Skype;
             
-            if (profile != null)
-            {
-                database.ClientManager.Update(profile);
-            }   
+            database.ProfileManager.Update(profile);
+            database.Save();
+            
         }
 
         public void UpdateAvatar(ProfileDTO profileDto)
         {
-            var profile = database.ClientManager.GetProfile(profileDto.Id);
+            var profile = database.ProfileManager.GetProfile(profileDto.Id);
             profile.Avatar = profileDto.Avatar;
             
             if (profile != null)
             {
-                database.ClientManager.Update(profile);
+                database.ProfileManager.Update(profile);
             }
         }
 
@@ -128,7 +121,7 @@ namespace SmlGround.DLL.Service
 
         public ProfileDTO FindProfile(string Id)
         {
-            var profile = database.ClientManager.GetProfile(Id);
+            var profile = database.ProfileManager.GetProfile(Id);
             var userProfileDto = new ProfileDTO {Id = profile.Id, Avatar = profile.Avatar, Name = profile.Name, Surname = profile.Surname, Birthday = profile.Birthday,
                                                       City = profile.City, PlaceOfStudy = profile.PlaceOfStudy, Skype = profile.Skype};
             return userProfileDto;
