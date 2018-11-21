@@ -31,13 +31,14 @@ namespace SmlGround.Controllers
         }
         public ActionResult Login()
         {
+            
+
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(LoginModel model)
         {
-            
             if (ModelState.IsValid)
             {
                 UserDTO userDto = new UserDTO { Email = model.Email, Password = model.Password };
@@ -65,12 +66,15 @@ namespace SmlGround.Controllers
         }
         public ActionResult Register()
         {
+            
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegistrationModel model)
         {
+            //await SetInitialDataAsync();
+
             if (ModelState.IsValid)
             {
                 UserDTO userDto = new UserDTO
@@ -144,8 +148,7 @@ namespace SmlGround.Controllers
         
         }
 
-        //await SetInitialDataAsync();
-
+        
         //private async Task SetInitialDataAsync()
         //{
         //    await UserService.SetInitialData(new UserDTO

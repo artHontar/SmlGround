@@ -25,7 +25,7 @@ namespace SmlGround.DLL.Service
         }
 
         public async Task<string> Create(UserDTO userDto)
-        {
+        { 
             User user = await Database.UserManager.FindByEmailAsync(userDto.Email);
             if (user == null)
             {
@@ -56,10 +56,7 @@ namespace SmlGround.DLL.Service
             profile.PlaceOfStudy = profileDto.PlaceOfStudy;
             profile.Skype = profileDto.Skype;
             
-            if (profile != null)
-            {
-                Database.ClientManager.Update(profile);
-            }   
+            Database.ClientManager.Update(profile);
         }
         public void UpdateAvatar(ProfileDTO profileDto)
         {

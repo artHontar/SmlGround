@@ -37,9 +37,6 @@
                     <h5>
                         @Html.DisplayFor(x => x.Name) @Html.DisplayFor(x => x.Surname)
                     </h5>
-                    @*<h6>
-
-                    </h6>*@
                     <p>
                         <label for="Birthday">День рождения</label>
                         <span>
@@ -100,22 +97,15 @@
     input.addEventListener("change", function () {
 
         if (input.value != "") {
-            //var formData = new FormData();
             var file = document.querySelector("input[type='file']").files[0];
             
-            //var reader = new FileReader();
-            //var base64Image;
-            //reader.readAsDataURL(file);
-            //reader.onload = function () {
-            //    base64Image = reader.result;
-                var formdata = new FormData();
+            var formdata = new FormData();
             formdata.append("uploadImage", file);
                 formdata.append("id", document.querySelector("input[name='Id']").value);
                 $.ajax({
                     url: "/Social/EditAvatar",
                     data:
                         formdata
-                    //formData// не работает нихуя
                     ,
                     dataType: "json",
                     contentType: false,
@@ -133,16 +123,11 @@
                             );
                             input.value = "";
                         }
-                        //input.value = "";
-
-                        //var img = document.querySelector("img[name='avatar']");
-                        //img.src = "data:image/jpeg;base64," + Convert.ToBase64String(Model.Avatar);
                     }
 
                 });
             };
-            
-        //}
+           
         function getBase64(file) {
             var reader = new FileReader();
             reader.readAsDataURL(file);

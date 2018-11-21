@@ -37,7 +37,6 @@ namespace SmlGround.Controllers
 
         public ActionResult Profile(string id)
         {
-            //UserDTO userDto = await UserService.FindById();
             if (id == null)
             {
                 id = HttpContext.User.Identity.GetUserId();
@@ -139,5 +138,20 @@ namespace SmlGround.Controllers
             //UserDTO userDto = await UserService.FindById();
             return new EmptyResult();
         }
+        
+        //private void SetInitialDataAsync()
+        //{
+        //    UserService.SetInitialData(new UserDTO
+        //    {
+        //        Email = "artemgontar16@gmail.com",
+        //        UserName = "artemgontar16",
+        //        Password = "123456",
+        //        Birthday = new DateTime(1999, 04, 30),
+        //        Name = "Artem",
+        //        Surname = "Gontar",
+        //        Role = "admin",
+        //    }, new List<string> { "user", "admin" });
+        //}
+
     }
 }
