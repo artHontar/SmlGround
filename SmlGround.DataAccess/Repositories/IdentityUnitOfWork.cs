@@ -1,31 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
 using SmlGround.DataAccess.EF;
 using SmlGround.DataAccess.Identity;
 using SmlGround.DataAccess.Interface;
 using SmlGround.DataAccess.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace SmlGround.DataAccess.Repositories
 {
     public class IdentityUnitOfWork : IUnitOfWork
     {
-        private SocialDbContext db;
-        private ApplicationUserManager userManager;
-        private ApplicationRoleManager roleManager;
-        private IClientManager clientManager;
+        private SocialDbContext db { get; }
+        private ApplicationUserManager userManager { get; }
+        private ApplicationRoleManager roleManager { get; }
+        private IProfileRepository profileManager { get; }
 
-        public IdentityUnitOfWork(string connectionString)
+        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager,ApplicationRoleManager roleManager,  IProfileRepository profileManager) 
         {
-            db = new SocialDbContext(connectionString);
-            userManager = new ApplicationUserManager(new UserStore<User>(db));
-            roleManager = new ApplicationRoleManager(new RoleStore<ApplicationRole>(db));
-            
-            clientManager = new ClientManager(db);
+            this.db = db;
+            this.userManager = userManager;
+            this.roleManager = roleManager;//new ApplicationRoleManager(new RoleStore<ApplicationRole>(db));
+            this.profileManager = profileManager;
         }
+
         public ApplicationUserManager UserManager
         {
             get { return userManager; }
@@ -35,13 +32,15 @@ namespace SmlGround.DataAccess.Repositories
         {
             get { return roleManager; }
         }
-        public IClientManager ClientManager
+
+        public IProfileRepository ProfileManager
         {
-            get { return clientManager; }
+            get { return profileManager; }
         }
-        public async Task SaveAsync()
+
+        public void Save()
         {
-            await db.SaveChangesAsync();
+            db.SaveChanges();
         }
 
         public void Dispose()
@@ -49,19 +48,20 @@ namespace SmlGround.DataAccess.Repositories
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        private bool disposed = false;
+
+        private bool _disposed = false;
 
         public virtual void Dispose(bool disposing)
         {
-            if (!this.disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
                     userManager.Dispose();
                     roleManager.Dispose();
-                    clientManager.Dispose();
+                    profileManager.Dispose();
                 }
-                this.disposed = true;
+                _disposed = true;
             }
         }
     }

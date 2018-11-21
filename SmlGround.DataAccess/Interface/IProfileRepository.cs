@@ -7,10 +7,12 @@ using SmlGround.DataAccess.Models;
 
 namespace SmlGround.DataAccess.Interface
 {
-    public interface IClientManager : IDisposable
+    public interface IProfileRepository : IDisposable
     {
         void Create(Profile profile);
         void Update(Profile profile);
+        void Delete(string id);
+        List<Profile> GetAllProfiles();
         Profile GetProfile(string id);
     }
 }

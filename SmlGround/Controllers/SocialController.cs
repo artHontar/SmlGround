@@ -1,142 +1,116 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Helpers;
-using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using Newtonsoft.Json;
 using SmlGround.DataAccess.Identity;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Interfaces;
 using SmlGround.DLL.Service;
 using SmlGround.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
+using AutoMapper;
+
 namespace SmlGround.Controllers
 {
     [Authorize]
     public class SocialController : Controller
     {
-        // GET: Social
-        private IUserService UserService
-        {
-            get { return HttpContext.GetOwinContext().GetUserManager<IUserService>(); }
-        }
+        private readonly IUserService _userService; //=> HttpContext.GetOwinContext().GetUserManager<IUserService>();
 
         public ApplicationSignInManager SignInManager => HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
 
-        private IAuthenticationManager AuthenticationManager
+        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
+
+        public SocialController(IUserService userService)
         {
-            get { return HttpContext.GetOwinContext().Authentication; }
+            this._userService = userService;
         }
 
-        public ActionResult Profile(string id)
+
+        [ActionName("Profile")]
+        public ActionResult UserProfile(string id)
         {
             if (id == null)
             {
                 id = HttpContext.User.Identity.GetUserId();
+                ViewBag.Success = TempData["Success"]?.ToString();
             }
 
-            ProfileDTO profileDto = UserService.FindProfile(id);
-                ProfileViewModel profileViewModel = new ProfileViewModel
-                {
-                    Id = profileDto.Id,
-                    Avatar = profileDto.Avatar,
-                    Name = profileDto.Name,
-                    Surname = profileDto.Surname,
-                    Birthday = profileDto.Birthday,
-                    City = profileDto.City,
-                    PlaceOfStudy = profileDto.PlaceOfStudy,
-                    Skype = profileDto.Skype
-                };
-            if (profileViewModel.Avatar != null)
-            {
-                ViewBag.Image = Convert.ToBase64String(profileViewModel.Avatar);
-            }
+            var profileDto = _userService.FindProfile(id);
+
+            var profileViewModel = Mapper.Map<ProfileDTO, ProfileViewModel>(profileDto);
+            
             if (profileViewModel.Id == HttpContext.User.Identity.GetUserId())
-                {
-                    profileViewModel.IsCurrentUserProfile = true;
-                }
-                return View(profileViewModel);
+            {
+                profileViewModel.IsCurrentUserProfile = true;
+            }
+            return View(profileViewModel);
         }
+
         public ActionResult Edit(string id)
         {
-            ProfileDTO profileDto = UserService.FindProfile(id);
-            ProfileViewModel profileViewModel = new ProfileViewModel
-            {
-                Id = profileDto.Id,
-                Avatar = profileDto.Avatar,
-                Name = profileDto.Name,
-                Surname = profileDto.Surname,
-                Birthday = profileDto.Birthday,
-                City = profileDto.City,
-                PlaceOfStudy = profileDto.PlaceOfStudy,
-                Skype = profileDto.Skype
-            };
+            var profileDto = _userService.FindProfile(id);
 
-            return View("Edit",profileViewModel);
+            var editProfileViewModel = Mapper.Map<ProfileDTO, EditProfileViewModel>(profileDto);
+
+            return View("Edit",editProfileViewModel);
         }
+
         [HttpPost]
-        public ActionResult Edit([Bind(Include = "Id,Name,Surname,Birthday,City,PlaceOfStudy")]ProfileViewModel profileViewModel)
+        public async Task<ActionResult> Edit([Bind(Include = "Id,Name,Surname,Birthday,City,PlaceOfStudy")]EditProfileViewModel profileViewModel)
         {
             if (ModelState.IsValid)
             {
-                ProfileDTO profileDto = new ProfileDTO()
-                {
-                    Id = profileViewModel.Id,
-                    Name = profileViewModel.Name,
-                    Surname = profileViewModel.Surname,
-                    Birthday = profileViewModel.Birthday,
-                    City = profileViewModel.City,
-                    PlaceOfStudy = profileViewModel.PlaceOfStudy,
-                    Skype = profileViewModel.Skype
-                };
+                var profileDto = Mapper.Map<EditProfileViewModel, ProfileDTO>(profileViewModel);
                 
-                UserService.Update(profileDto);
+                _userService.Update(profileDto);
+                TempData["Success"] = "Изменения сохранены";
             }
+            else
+                TempData["Success"] = "Не удалось сохранить изменения";
+
             //Update Profile
-            //UserDTO userDto = await UserService.FindById();
+            //UserDTO userDto = await _userService.FindById();
             return RedirectToAction("Profile", "Social");
         }
+
         [HttpPost]
         public ActionResult EditAvatar(string id, HttpPostedFileBase uploadImage)
         {
-            ProfileDTO profileDto = UserService.FindProfile(id);
+            ProfileDTO profileDto = _userService.FindProfile(id);
 
-            if (ModelState.IsValid) //&& uploadImage != null)
+            if (ModelState.IsValid&& uploadImage != null)
             {
-                byte[] imageData = null;
-                // считываем переданный файл в массив байтов
-                using (var binaryReader = new BinaryReader(uploadImage.InputStream))
-                {
-                    imageData = binaryReader.ReadBytes(uploadImage.ContentLength);
-                }
-
-                profileDto.Avatar = imageData;
-                UserService.UpdateAvatar(profileDto);
-                return Json(imageData);
-                //return Content(base64Image);
+                CastBinaryFormatter binaryFormatter = new CastBinaryFormatter(uploadImage);
+                
+                profileDto.Avatar = binaryFormatter.Convert();
+                _userService.UpdateAvatar(profileDto);
+                return Json(profileDto.Avatar);
             }
-            //ProfileDTO profileDto = new ProfileDTO()
-            //{
-            //    Id = profileViewModel.Id,
-            //    Avatar = profileViewModel.Avatar,
-            //    Name = profileViewModel.Name,
-            //    Surname = profileViewModel.Surname,
-            //    Birthday = profileViewModel.Birthday,
-            //    City = profileViewModel.City,
-            //    PlaceOfStudy = profileViewModel.PlaceOfStudy,
-            //    Skype = profileViewModel.Skype
-            //};
-            //UserService.Update(profileDto);
-            ////Update Profile
-            //UserDTO userDto = await UserService.FindById();
+
             return new EmptyResult();
+        }
+
+        public ActionResult People()
+        {
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(null));//new List<ProfileViewModel>();
+            
+            return View("People", profileViewModelList);
+        } 
+
+        public ActionResult FindPeople(string text)
+        {
+            //var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles());//new List<ProfileViewModel>();
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(text));//new List<ProfileViewModel>();
+            if (profileViewModelList.Count > 0)
+            {
+                return PartialView("UsersList", profileViewModelList);
+            }
+
+            return Content("По вашему запросу ничего не найдено");
         }
         
         //private void SetInitialDataAsync()

@@ -1,0 +1,36 @@
+﻿@model IEnumerable<SmlGround.Models.ProfileViewModel>
+<ul id="users" class="list-group">
+    <li href="#" class="list-group-item title">
+        All people
+    </li>
+    @foreach (var item in Model)
+    {
+        <li href="#" class="list-group-item text-left">
+            @if (item.Avatar == null)
+            {
+                <img width="100" name="avatar" src='~/Image/avatar.png'/>
+            }
+            else
+            {
+                @Html.Raw("<img width='100px' name='avatar' src=\"data:image/png;base64,"
+                          + Convert.ToBase64String(item.Avatar) + "\" />")
+            }
+
+            <label class="name">
+                @item.Name @item.Surname
+            </label>
+            <label class="pull-right">
+                <a class="btn btn-success btn-xs glyphicon glyphicon-ok" href="/Social/Profile/@item.Id" title="View"></a>
+                <a class="btn btn-secondary  btn-xs glyphicon glyphicon-trash" href="#" title="Add friend"></a>
+                <a class="btn btn-info  btn-xs glyphicon glyphicon glyphicon-comment" href="#" title="Send message"></a>
+            </label>
+            <div class="break"></div>
+        </li>
+    }
+    @*<li href="#" class="list-group-item text-left">
+                    <a class="btn btn-block btn-primary">
+                        <i class="glyphicon glyphicon-refresh"></i>
+                        Load more...
+                    </a>
+                </li>*@
+</ul>
