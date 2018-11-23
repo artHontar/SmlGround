@@ -16,8 +16,9 @@ namespace SmlGround.DataAccess.Module
     {
         protected override void Load(ContainerBuilder builder)
         {
+            builder.Register(c => new SocialDbContext("DbConnection")).SingleInstance().InstancePerRequest();
+            //builder.RegisterType<SocialDbContext>().As<DbContext>();
             builder.RegisterModule(new RepositoryModule());
-            builder.Register(c => new SocialDbContext("DbConnection"));
             
         }
 

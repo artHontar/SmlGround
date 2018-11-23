@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using AutoMapper;
+using Microsoft.AspNet.Identity;
 using SmlGround.DataAccess.Interface;
 using SmlGround.DataAccess.Models;
+using Profile = SmlGround.DataAccess.Models.Profile;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Infrastructure;
 using SmlGround.DLL.Interfaces;
@@ -24,21 +26,10 @@ namespace SmlGround.DLL.Service
         {
             List<Profile> list = database.ProfileManager.GetAllProfiles();
             List<ProfileDTO> listDto = list.Where(profile => string.IsNullOrEmpty(search) || profile.Name.Contains(search) || profile.Surname.Contains(search))
-            .Select(item => new ProfileDTO
-            {
-                Id = item.Id,
-                Name = item.Name,
-                Surname = item.Surname,
-                Avatar = item.Avatar,
-                Birthday = item.Birthday,
-                City = item.City,
-                PlaceOfStudy = item.PlaceOfStudy,
-                Skype = item.Skype
-            }).ToList();
-           
+            .Select(item => Mapper.Map<Profile ,ProfileDTO>(item)).ToList();
             return listDto;
         }
-        public async Task<string> Create(UserDTO userDto)
+        public async Task<string> Create(UserRegistrationDTO userDto)
         {
             var user = await database.UserManager.FindByEmailAsync(userDto.Email);
 
@@ -49,29 +40,28 @@ namespace SmlGround.DLL.Service
                 if(result.Errors.Any())
                     return null;
                 await database.UserManager.AddToRoleAsync(user.Id, userDto.Role);
-                // create client's profile
+                
                 var profile = new Profile { Id = user.Id, Name = userDto.Name, Surname = userDto.Surname, Birthday = userDto.Birthday };
                 database.ProfileManager.Create(profile);
-                database.Save();
+                await database.SaveAsync();
                 return user.Id;
             }
             return "Пользователь с таким логином уже существует";
         }
 
-        public void Update(ProfileDTO profileDto)
+        public void Update(ProfileWithoutAvatarDTO profileDto)
         {
             var profile = database.ProfileManager.GetProfile(profileDto.Id);
 
-            profile.Name = profileDto.Name;
-            profile.Surname = profileDto.Surname;
-            profile.Birthday = profileDto.Birthday;
-            profile.City = profileDto.City;
-            profile.PlaceOfStudy = profileDto.PlaceOfStudy;
-            profile.Skype = profileDto.Skype;
-            
+            Mapper.Map(profileDto, profile);
+            //profile.Name = profileDto.Name;
+            //profile.Surname = profileDto.Surname;
+            //profile.Birthday = profileDto.Birthday;
+            //profile.City = profileDto.City;
+            //profile.PlaceOfStudy = profileDto.PlaceOfStudy;
+            //profile.Skype = profileDto.Skype;
+
             database.ProfileManager.Update(profile);
-            database.Save();
-            
         }
 
         public void UpdateAvatar(ProfileDTO profileDto)
@@ -85,7 +75,7 @@ namespace SmlGround.DLL.Service
             }
         }
 
-        public async Task<ClaimsIdentity> Authenticate(UserDTO userDto)
+        public async Task<ClaimsIdentity> Authenticate(UserConfirmDTO userDto)
         {
             ClaimsIdentity claim = null;
 
@@ -99,7 +89,7 @@ namespace SmlGround.DLL.Service
             return claim;
         }
 
-        public async Task<ClaimsIdentity> AutoAuthenticate(UserDTO userDto)
+        public async Task<ClaimsIdentity> AutoAuthenticate(UserConfirmDTO userDto)
         {
             ClaimsIdentity claim = null;
 
@@ -112,18 +102,11 @@ namespace SmlGround.DLL.Service
             return claim;
         }
 
-        //public UserDTO FindByEmail(string Email)
-        //{
-        //    User user = Database.UserManager.FindByEmail(Email);
-        //    UserDTO userDto = new UserDTO {Id = user.Id,Email = user.Email, Password = user.PasswordHash, UserName = user.UserName};
-        //    return userDto;
-        //}
-
         public ProfileDTO FindProfile(string Id)
         {
             var profile = database.ProfileManager.GetProfile(Id);
-            var userProfileDto = new ProfileDTO {Id = profile.Id, Avatar = profile.Avatar, Name = profile.Name, Surname = profile.Surname, Birthday = profile.Birthday,
-                                                      City = profile.City, PlaceOfStudy = profile.PlaceOfStudy, Skype = profile.Skype};
+            var userProfileDto = Mapper.Map<Profile,ProfileDTO>(profile);
+            
             return userProfileDto;
         }
 
@@ -143,7 +126,7 @@ namespace SmlGround.DLL.Service
             return new OperationDetails(false, "Подтвердить Email не удалось", "");
         }
 
-        public async Task SetInitialData(UserDTO adminDto, List<string> roles)
+        public async Task SetInitialData(UserRegistrationDTO adminDto, List<string> roles)
         {
             foreach (string roleName in roles)
             {

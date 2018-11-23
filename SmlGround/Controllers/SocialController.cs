@@ -12,17 +12,22 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
+using NLog;
+using SmlGround.Filters;
 
 namespace SmlGround.Controllers
 {
     [Authorize]
+    [LogInfo]
+    [NullException]
     public class SocialController : Controller
     {
+        
         private readonly IUserService _userService; //=> HttpContext.GetOwinContext().GetUserManager<IUserService>();
 
-        public ApplicationSignInManager SignInManager => HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
+        //public ApplicationSignInManager SignInManager => HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
 
-        private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
+        //private IAuthenticationManager AuthenticationManager => HttpContext.GetOwinContext().Authentication;
 
         public SocialController(IUserService userService)
         {
@@ -31,23 +36,21 @@ namespace SmlGround.Controllers
 
 
         [ActionName("Profile")]
+        
         public ActionResult UserProfile(string id)
         {
-            //UserDTO userDto = await _userService.FindById();
-            if (id == null)
-            {
-                id = HttpContext.User.Identity.GetUserId();
-                ViewBag.Success = TempData["Success"]?.ToString();
-            }
+            id = id == null ? HttpContext.User.Identity.GetUserId() : id;
+        
+            ViewBag.Success = TempData["Success"]?.ToString();
 
             var profileDto = _userService.FindProfile(id);
 
             var profileViewModel = Mapper.Map<ProfileDTO, ProfileViewModel>(profileDto);
+        
+            profileViewModel.IsCurrentUserProfile =
+                profileViewModel.Id.Equals(HttpContext.User.Identity.GetUserId()) ? true : false;
             
-            if (profileViewModel.Id == HttpContext.User.Identity.GetUserId())
-            {
-                profileViewModel.IsCurrentUserProfile = true;
-            }
+
             return View(profileViewModel);
         }
 
@@ -65,16 +68,13 @@ namespace SmlGround.Controllers
         {
             if (ModelState.IsValid)
             {
-                var profileDto = Mapper.Map<EditProfileViewModel, ProfileDTO>(profileViewModel);
+                var profileDto = Mapper.Map<EditProfileViewModel, ProfileWithoutAvatarDTO>(profileViewModel);
                 
                 _userService.Update(profileDto);
                 TempData["Success"] = "Изменения сохранены";
             }
             else
                 TempData["Success"] = "Не удалось сохранить изменения";
-
-            //Update Profile
-            //UserDTO userDto = await _userService.FindById();
             return RedirectToAction("Profile", "Social");
         }
 
@@ -83,7 +83,7 @@ namespace SmlGround.Controllers
         {
             ProfileDTO profileDto = _userService.FindProfile(id);
 
-            if (ModelState.IsValid&& uploadImage != null)
+            if (ModelState.IsValid && uploadImage != null)
             {
                 CastBinaryFormatter binaryFormatter = new CastBinaryFormatter(uploadImage);
                 
@@ -100,17 +100,16 @@ namespace SmlGround.Controllers
             var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(null));//new List<ProfileViewModel>();
             
             return View("People", profileViewModelList);
-        } 
+        }
 
+        [NonDirectAccess]
         public ActionResult FindPeople(string text)
         {
-            //var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles());//new List<ProfileViewModel>();
             var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(text));//new List<ProfileViewModel>();
             if (profileViewModelList.Count > 0)
             {
                 return PartialView("UsersList", profileViewModelList);
             }
-
             return Content("По вашему запросу ничего не найдено");
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
+
 using Owin;
 using SmlGround.DLL.Interfaces;
 using SmlGround.DLL.Service;
@@ -13,6 +14,7 @@ namespace SmlGround.App_Start
     {
         public void Configuration(IAppBuilder app)
         {
+            
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,

@@ -91,7 +91,6 @@
     <Compile Include="Configuration\PostConfiguration.cs" />
     <Compile Include="Configuration\ProfileConfiguration.cs" />
     <Compile Include="Configuration\UserConfiguration.cs" />
-    <Compile Include="EF\MyContextFactory.cs" />
     <Compile Include="Identity\ApplicationSignInManager.cs" />
     <Compile Include="Interface\IProfileRepository.cs" />
     <Compile Include="Interface\IUnitOfWork.cs" />

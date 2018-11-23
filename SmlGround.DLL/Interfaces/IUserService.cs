@@ -12,14 +12,14 @@ namespace SmlGround.DLL.Interfaces
 {
     public interface IUserService : IDisposable
     {
-        Task<string> Create(UserDTO userDto);
+        Task<string> Create(UserRegistrationDTO userDto);
         Task<OperationDetails> ConfirmEmail(string Token,string Email);
-        Task<ClaimsIdentity> Authenticate(UserDTO userDto);
-        Task<ClaimsIdentity> AutoAuthenticate(UserDTO userDto);
+        Task<ClaimsIdentity> Authenticate(UserConfirmDTO userDto);
+        Task<ClaimsIdentity> AutoAuthenticate(UserConfirmDTO userDto);
         ProfileDTO FindProfile(string Id);
-        void Update(ProfileDTO profileDto);
+        void Update(ProfileWithoutAvatarDTO profileDto);
         void UpdateAvatar(ProfileDTO profileDto);
         List<ProfileDTO> GetAllProfiles(string search);
-        Task SetInitialData(UserDTO adminDto, List<string> roles);
+        Task SetInitialData(UserRegistrationDTO adminDto, List<string> roles);
     }
 }
