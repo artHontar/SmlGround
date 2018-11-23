@@ -15,11 +15,11 @@ namespace SmlGround.DataAccess.Repositories
         private ApplicationRoleManager roleManager { get; }
         private IProfileRepository profileManager { get; }
 
-        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager,ApplicationRoleManager roleManager,  IProfileRepository profileManager) 
-        {
+        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager,  IProfileRepository profileManager) 
+         {
             this.db = db;
-            this.userManager = userManager;
-            this.roleManager = roleManager;//new ApplicationRoleManager(new RoleStore<ApplicationRole>(db));
+             this.userManager = userManager; //new ApplicationUserManager(new UserStore<User>(db));
+             this.roleManager = roleManager; //new ApplicationRoleManager(new RoleStore<IdentityRole>(db));
             this.profileManager = profileManager;
         }
 
@@ -38,9 +38,9 @@ namespace SmlGround.DataAccess.Repositories
             get { return profileManager; }
         }
 
-        public void Save()
+        public async Task SaveAsync()
         {
-            db.SaveChanges();
+            await db.SaveChangesAsync();
         }
 
         public void Dispose()

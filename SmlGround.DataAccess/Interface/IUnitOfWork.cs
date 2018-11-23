@@ -13,6 +13,6 @@ namespace SmlGround.DataAccess.Interface
         ApplicationUserManager UserManager { get; }
         IProfileRepository ProfileManager { get; }
         ApplicationRoleManager RoleManager { get; }
-        void Save();
+        Task SaveAsync();
     }
 }

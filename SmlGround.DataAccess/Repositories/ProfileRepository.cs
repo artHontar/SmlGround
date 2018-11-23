@@ -27,6 +27,7 @@ namespace SmlGround.DataAccess.Repositories
         public void Create(Profile item)
         {
             Database.Profiles.Add(item);
+            Database.SaveChanges();
         }
 
         public Profile GetProfile(string id)
@@ -42,6 +43,7 @@ namespace SmlGround.DataAccess.Repositories
         public void Update(Profile item)
         {
             Database.Entry(item).State = EntityState.Modified;
+            Database.SaveChanges();
         }
 
         public void Dispose()
