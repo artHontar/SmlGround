@@ -25,7 +25,22 @@ namespace SmlGround.Models
         public string PlaceOfStudy { get; set; }
         [DataType(DataType.Text)]
         public string Skype { get; set; }
-
+        public Boolean IsFriend { get; set; }
         public Boolean IsCurrentUserProfile { get; set; }
+
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ProfileViewModel))
+                throw new ArgumentException("obj is not an ProfileViewModel");
+            var usr = obj as ProfileViewModel;
+            if (usr == null)
+                return false;
+            return this.Id.Equals(usr.Id);
+        }
     }
 }

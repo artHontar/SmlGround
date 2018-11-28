@@ -17,5 +17,6 @@ namespace SmlGround.DLL.DTO
         public string PlaceOfStudy { get; set; }
         public string Skype { get; set; }
 
+        
     }
 }

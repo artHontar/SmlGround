@@ -10,6 +10,7 @@ namespace SmlGround.DataAccess.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
+            ContextKey = "SmlGround.DataAccess.EF.SocialDbContext";
         }
 
         protected override void Seed(SmlGround.DataAccess.EF.SocialDbContext context)

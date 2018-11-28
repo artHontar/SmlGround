@@ -1,11 +1,5 @@
 ﻿using SmlGround.DataAccess.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data.Entity.ModelConfiguration;
-using  Microsoft.AspNet.Identity.EntityFramework;
 
 namespace SmlGround.DataAccess.Configuration
 {
@@ -22,9 +16,11 @@ namespace SmlGround.DataAccess.Configuration
             HasRequired(c => c.Profile)
                 .WithRequiredPrincipal(o => o.User);
             HasMany(c => c.Dialogs)
-                .WithOptional(o => o.UserOne);
-            HasMany(c => c.Friends)
-                .WithOptional(o => o.UserOne);
+                .WithRequired(o => o.UserOne);
+            HasMany(c => c.SentFriends)
+                .WithRequired(o => o.UserBy);
+            HasMany(c => c.ReceievedFriends)
+                .WithRequired(o => o.UserTo);
             HasMany(c => c.Posts)
                 .WithOptional(o => o.User);
         }

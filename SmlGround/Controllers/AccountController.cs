@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.Owin.Security;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Infrastructure;
@@ -71,9 +73,11 @@ namespace SmlGround.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegistrationModel model)
         {
+            await SetInitialDataAsync();
             if (ModelState.IsValid)
             {
                 UserRegistrationDTO userDto = Mapper.Map<RegistrationModel, UserRegistrationDTO>(model);
+                //userDto.Role = "user";
                 string id = await UserService.Create(userDto);
                 if (id != null && id != "Пользователь с таким логином уже существует")
                 {
@@ -102,7 +106,6 @@ namespace SmlGround.Controllers
         }
 
         [AllowAnonymous]
-        [NonDirectAccess]
         public async Task<ActionResult> ConfirmEmail(string Token, string Email)
         {
             OperationDetails operationDetails = await UserService.ConfirmEmail(Token, Email);
@@ -129,6 +132,19 @@ namespace SmlGround.Controllers
                 return RedirectToAction("Confirm", "Account", new { Email = Email });
             return RedirectToAction("Confirm", "Account", new { Email = "" });
         
+        }
+        private async Task SetInitialDataAsync()
+        {
+            await UserService.SetInitialData(new UserRegistrationDTO
+            {
+                Email = "artemgontar16@gmail.com",
+                UserName = "artemgontar16",
+                Password = "123456",
+                Birthday = new DateTime(1999, 04, 30),
+                Name = "Artem",
+                Surname = "Gontar",
+                Role = "admin",
+            }, new List<string> { "user", "admin" });
         }
     }
 }

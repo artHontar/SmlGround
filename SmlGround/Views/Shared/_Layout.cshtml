@@ -23,12 +23,23 @@
                 <div class="navbar-header">
                     <div class="dropdown">
                         <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Dropdown
+                            @ViewBag.Name
+                            @if (@ViewBag.Avatar == null)
+                            {
+                                <img style='width:25px; height:25px; object-fit:cover; border-radius:100px' name="avatar" src='~/Image/avatar.png' />
+                            }
+                            else
+                            {
+                                @Html.Raw("<img style='width:25px; height:25px; object-fit:cover; border-radius:100px' name='avatar' src=\"data:image/png;base64," 
+                                          + Convert.ToBase64String(@ViewBag.Avatar) + "\" />")}
+
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="/Social/Profile">Профиль</a>
                             <a class="dropdown-item" href="/Social/People">Люди</a>
+                            <a class="dropdown-item" href="/Social/Friends">Друзья</a>
                             <a class="dropdown-item" href="/Account/Logout">Выйти</a>
+
                         </div>
                     </div>
                 </div>

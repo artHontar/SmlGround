@@ -98,6 +98,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DTO\FriendDTO.cs" />
     <Compile Include="DTO\ProfileDTO.cs" />
     <Compile Include="DTO\ProfileWithoutAvatarDTO.cs" />
     <Compile Include="DTO\UserConfirmDTO.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="DTO\UserRegistrationDTO.cs" />
     <Compile Include="Infrastructure\OperationDetails.cs" />
     <Compile Include="Interfaces\IMessege.cs" />
-    <Compile Include="Interfaces\IServiceCreator.cs" />
     <Compile Include="Interfaces\IUserService.cs" />
     <Compile Include="Module\ServiceModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,6 +115,10 @@
     <Compile Include="Service\UserService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{04cc594c-8214-46c2-9c31-5b432054d4de}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SmlGround.DataAccess\SmlGround.DataAccess.csproj">
       <Project>{3d887ab6-e4e0-4e2d-a498-0d57b2329c8a}</Project>
       <Name>SmlGround.DataAccess</Name>

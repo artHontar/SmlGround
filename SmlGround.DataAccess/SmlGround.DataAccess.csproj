@@ -92,15 +92,19 @@
     <Compile Include="Configuration\ProfileConfiguration.cs" />
     <Compile Include="Configuration\UserConfiguration.cs" />
     <Compile Include="Identity\ApplicationSignInManager.cs" />
-    <Compile Include="Interface\IProfileRepository.cs" />
+    <Compile Include="Interface\IRepository.cs" />
     <Compile Include="Interface\IUnitOfWork.cs" />
-    <Compile Include="Migrations\201811081321437_SocialDB.cs" />
-    <Compile Include="Migrations\201811081321437_SocialDB.Designer.cs">
-      <DependentUpon>201811081321437_SocialDB.cs</DependentUpon>
+    <Compile Include="Migrations\201811270927213_InitialCreate.cs" />
+    <Compile Include="Migrations\201811270927213_InitialCreate.Designer.cs">
+      <DependentUpon>201811270927213_InitialCreate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201811091024337_SocialDB1.cs" />
-    <Compile Include="Migrations\201811091024337_SocialDB1.Designer.cs">
-      <DependentUpon>201811091024337_SocialDB1.cs</DependentUpon>
+    <Compile Include="Migrations\201811271243059_SocialDB 27.11.cs" />
+    <Compile Include="Migrations\201811271243059_SocialDB 27.11.Designer.cs">
+      <DependentUpon>201811271243059_SocialDB 27.11.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201811271335566_SocialDB 27.111.cs" />
+    <Compile Include="Migrations\201811271335566_SocialDB 27.111.Designer.cs">
+      <DependentUpon>201811271335566_SocialDB 27.111.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\ApplicationRole.cs" />
@@ -116,6 +120,7 @@
     <Compile Include="Module\EFModule.cs" />
     <Compile Include="Module\RepositoryModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\FriendRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\IdentityUnitOfWork.cs" />
   </ItemGroup>
@@ -124,11 +129,20 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201811081321437_SocialDB.resx">
-      <DependentUpon>201811081321437_SocialDB.cs</DependentUpon>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{04cc594c-8214-46c2-9c31-5b432054d4de}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201811270927213_InitialCreate.resx">
+      <DependentUpon>201811270927213_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201811091024337_SocialDB1.resx">
-      <DependentUpon>201811091024337_SocialDB1.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201811271243059_SocialDB 27.11.resx">
+      <DependentUpon>201811271243059_SocialDB 27.11.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201811271335566_SocialDB 27.111.resx">
+      <DependentUpon>201811271335566_SocialDB 27.111.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

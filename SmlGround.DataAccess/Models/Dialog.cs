@@ -14,8 +14,8 @@ namespace SmlGround.DataAccess.Models
         }
 
         public long DialogId { get; set; }
-        public long? UserOneId { get; set; }
-        public long? UserTwoId { get; set; }
+        public string UserOneId { get; set; }
+        public string UserTwoId { get; set; }
         public User UserOne { get; set; }
         public User UserTwo { get; set; }
         public DateTime CreationTime { get; set; }

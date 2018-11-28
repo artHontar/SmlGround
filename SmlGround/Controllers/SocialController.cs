@@ -8,11 +8,13 @@ using SmlGround.DLL.Service;
 using SmlGround.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
 using NLog;
+using SmlGround.DataAccess.Models;
 using SmlGround.Filters;
 
 namespace SmlGround.Controllers
@@ -33,32 +35,58 @@ namespace SmlGround.Controllers
         {
             this._userService = userService;
         }
-
-
-        [ActionName("Profile")]
         
-        public ActionResult UserProfile(string id)
+        [ActionName("Profile")]
+        public async Task<ActionResult> UserProfile(string id)
         {
             id = id == null ? HttpContext.User.Identity.GetUserId() : id;
         
             ViewBag.Success = TempData["Success"]?.ToString();
 
-            var profileDto = _userService.FindProfile(id);
+            var profileDto = await _userService.FindProfile(id);
 
             var profileViewModel = Mapper.Map<ProfileDTO, ProfileViewModel>(profileDto);
         
             profileViewModel.IsCurrentUserProfile =
                 profileViewModel.Id.Equals(HttpContext.User.Identity.GetUserId()) ? true : false;
-            
 
+            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+
+            ViewBag.Name = currentUser.Name;
+            ViewBag.Avatar = currentUser.Avatar;
             return View(profileViewModel);
         }
 
-        public ActionResult Edit(string id)
+        public async Task<ActionResult> Friends(string id)
         {
-            var profileDto = _userService.FindProfile(id);
+            id = id == null ? HttpContext.User.Identity.GetUserId() : id;
 
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriends(id));
+
+            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+
+            ViewBag.Name = currentUser.Name;
+            ViewBag.Avatar = currentUser.Avatar;
+
+            return View("Friends",profileViewModelList);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> AddFriend(string id)
+        {
+            await _userService.AddFriend(HttpContext.User.Identity.GetUserId(), id);
+            return new EmptyResult();
+        }
+
+        public async Task<ActionResult> Edit(string id)
+        {
+            var profileDto = await _userService.FindProfile(id);
             var editProfileViewModel = Mapper.Map<ProfileDTO, EditProfileViewModel>(profileDto);
+            
+            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+
+            ViewBag.Name = currentUser.Name;
+            ViewBag.Avatar = currentUser.Avatar;
 
             return View("Edit",editProfileViewModel);
         }
@@ -70,7 +98,7 @@ namespace SmlGround.Controllers
             {
                 var profileDto = Mapper.Map<EditProfileViewModel, ProfileWithoutAvatarDTO>(profileViewModel);
                 
-                _userService.Update(profileDto);
+                await _userService.Update(profileDto);
                 TempData["Success"] = "Изменения сохранены";
             }
             else
@@ -79,38 +107,61 @@ namespace SmlGround.Controllers
         }
 
         [HttpPost]
-        public ActionResult EditAvatar(string id, HttpPostedFileBase uploadImage)
+        public async Task<ActionResult> EditAvatar(string id, HttpPostedFileBase uploadImage)
         {
-            ProfileDTO profileDto = _userService.FindProfile(id);
+            var profileDto = await _userService.FindProfile(id);
 
             if (ModelState.IsValid && uploadImage != null)
             {
                 CastBinaryFormatter binaryFormatter = new CastBinaryFormatter(uploadImage);
                 
                 profileDto.Avatar = binaryFormatter.Convert();
-                _userService.UpdateAvatar(profileDto);
+                await _userService.UpdateAvatar(profileDto);
                 return Json(profileDto.Avatar);
             }
 
             return new EmptyResult();
         }
 
-        public ActionResult People()
+        public async Task<ActionResult> People()
         {
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(null));//new List<ProfileViewModel>();
-            
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(null));//new List<ProfileViewModel>();
+            var currentUserId = HttpContext.User.Identity.GetUserId();
+            var friends = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriends(currentUserId));
+            var list = profileViewModelList.Except(friends).ToList();
+            foreach (var item in friends)
+            {
+                item.IsFriend = true;
+            }
+            profileViewModelList = list.Union(friends).ToList();
+            //Во View отображение друг не друг
+            var currentUser = await _userService.FindProfile(currentUserId);
+            profileViewModelList.Remove(Mapper.Map<ProfileDTO, ProfileViewModel>(currentUser));
+            ViewBag.Name = currentUser.Name;
+            ViewBag.Avatar = currentUser.Avatar;
             return View("People", profileViewModelList);
         }
 
         [NonDirectAccess]
-        public ActionResult FindPeople(string text)
+        public async Task<ActionResult> FindPeople(string text)
         {
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(_userService.GetAllProfiles(text));//new List<ProfileViewModel>();
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(text));//new List<ProfileViewModel>();
             if (profileViewModelList.Count > 0)
             {
                 return PartialView("UsersList", profileViewModelList);
             }
             return Content("По вашему запросу ничего не найдено");
         }
+        
+        //public async Task<ActionResult> Friends()
+        //{
+        //    var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(null));//new List<ProfileViewModel>();
+
+        //    var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+
+        //    ViewBag.Name = currentUser.Name;
+        //    ViewBag.Avatar = currentUser.Avatar;
+        //    return View("Friends", profileViewModelList);
+        //}
     }
 }

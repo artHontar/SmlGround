@@ -8,27 +8,21 @@
         <li href="#" class="list-group-item text-left">
             @if (item.Avatar == null)
             {
-                <img width="100" name="avatar" src='~/Image/avatar.png'/>
+                <img width="100" name="avatar" src='~/Image/avatar.png' />
             }
             else
             {
                 @Html.Raw("<img width='100px' name='avatar' src=\"data:image/png;base64,"
                           + Convert.ToBase64String(item.Avatar) + "\" />")
             }
-
             <label class="name">
                 @item.Name @item.Surname
             </label>
             <label class="pull-right">
                 <a class="btn btn-success btn-xs glyphicon glyphicon-ok" href="/Social/Profile/@item.Id" title="Профиль"></a>
-                @if (item.IsFriend == false)
-                {
-                    <button type="button" id="@item.Id" class="btn btn-secondary add-friend btn-xs glyphicon glyphicon-trash" title="Добавить в друзья"></button>
-                }
-                else
-                {
-                    <button type="button" id="@item.Id" class="btn btn-danger delete-friend btn-xs glyphicon glyphicon-trash" title="Удалить из друзей"></button>
-                }
+                
+               <button type="button" id="@item.Id" class="btn btn-danger delete-friend btn-xs glyphicon glyphicon-trash" title="Удалить из друзей"></button>
+                
                 <button type="button" id="@item.Id" class="btn btn-info send-message btn-xs glyphicon glyphicon glyphicon-comment" title="Написать"></button>
             </label>
             <div class="break"></div>

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<SmlGround.Models.ProfileViewModel>
+
+@{
+    ViewBag.Title = "Friends";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section customcss {
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/Content/people.css">
+}
+<h2>Friends</h2>
+
+<div class="container bootstrap snippet">
+
+    <div class="jumbotron list-content">
+        <div class="row">
+            <div class="col-6 header">
+                <h3 class="text-muted prj-name">
+                    <span class="fa fa-users fa-2x principal-title"></span>
+                    People list
+                </h3>
+            </div>
+            <div class="col-6 col-md-5 col-lg-4">
+                <form class="card card-sm">
+                    <div class="card-body row no-gutters align-items-center">
+                        <div class="col-auto">
+                            <i class="fas fa-search h4 text-body"></i>
+                        </div>
+                        <!--end of col-->
+                        <div class="col">
+                            <input id="forSearch" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search">
+                        </div>
+                        <!--end of col-->
+                        <div class="col-auto">
+                            <button id="search" class="btn btn-lg btn-success" type="button">Search</button>
+                        </div>
+                        <!--end of col-->
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 20px;" id="forUl">
+            @{ Html.RenderPartial("UsersList"); }
+        </div>
+    </div>
+</div>
+

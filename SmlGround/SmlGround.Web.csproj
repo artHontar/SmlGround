@@ -218,6 +218,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\EditProfileViewModel.cs" />
+    <Compile Include="Models\FriendViewModel.cs" />
     <Compile Include="Models\LoginModel.cs" />
     <Compile Include="Models\ProfileViewModel.cs" />
     <Compile Include="Models\RegistrationModel.cs" />
@@ -318,6 +319,8 @@
     <Content Include="Views\Social\People.cshtml" />
     <Content Include="Views\Social\UsersList.cshtml" />
     <Content Include="Views\Shared\_LayoutAuth.cshtml" />
+    <Content Include="Views\Social\Friends.cshtml" />
+    <Content Include="Views\Social\FreindsList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -329,6 +332,10 @@
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{04cc594c-8214-46c2-9c31-5b432054d4de}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SmlGround.DataAccess\SmlGround.DataAccess.csproj">
       <Project>{3d887ab6-e4e0-4e2d-a498-0d57b2329c8a}</Project>
       <Name>SmlGround.DataAccess</Name>
