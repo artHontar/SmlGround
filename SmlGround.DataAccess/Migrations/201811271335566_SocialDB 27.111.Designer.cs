@@ -7,13 +7,13 @@ namespace SmlGround.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class SocialDB1 : IMigrationMetadata
+    public sealed partial class SocialDB27111 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(SocialDB1));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(SocialDB27111));
         
         string IMigrationMetadata.Id
         {
-            get { return "201811091024337_SocialDB1"; }
+            get { return "201811271335566_SocialDB 27.111"; }
         }
         
         string IMigrationMetadata.Source

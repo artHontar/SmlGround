@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmlGround.DataAccess.Models;
 
 namespace SmlGround.DLL.DTO
 {
@@ -21,6 +22,10 @@ namespace SmlGround.DLL.DTO
         public string PlaceOfStudy { get; set; }
         public string Skype { get; set; }
         public string Role { get; set; }
+        public ICollection<Friend> SentFriends { get; set; }
+        public ICollection<Friend> ReceievedFriends { get; set; }
+        public virtual Profile Profile { get; set; }
+
     }
-    
+
 }

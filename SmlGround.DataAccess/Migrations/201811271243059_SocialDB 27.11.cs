@@ -3,7 +3,7 @@ namespace SmlGround.DataAccess.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class SocialDB1 : DbMigration
+    public partial class SocialDB2711 : DbMigration
     {
         public override void Up()
         {

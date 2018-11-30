@@ -7,12 +7,11 @@ namespace SmlGround.DataAccess.EF
 {
     public class SocialDbContext : IdentityDbContext<User>
     {
-        private static int count = 0;
-        private string name = "context";
+        public SocialDbContext() : base("name=DbConnection")
+        {
+        }
         public SocialDbContext(string connectionString) : base(connectionString)
         {
-            count++;
-            name += " " + count;
         }
 
         public DbSet<Dialog> Dialogs { get; set; }

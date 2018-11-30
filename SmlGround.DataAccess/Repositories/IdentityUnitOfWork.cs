@@ -13,15 +13,19 @@ namespace SmlGround.DataAccess.Repositories
         private SocialDbContext db { get; }
         private ApplicationUserManager userManager { get; }
         private ApplicationRoleManager roleManager { get; }
-        private IProfileRepository profileManager { get; }
+        private IRepository<Profile,string> profileManager { get; }
+        private IRepository<Friend, string[]> friendManager { get; }
 
-        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager,  IProfileRepository profileManager) 
+
+
+        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager, IRepository<Profile,string> profileManager, IRepository<Friend,string[]> friendManager) 
          {
             this.db = db;
-             this.userManager = userManager; //new ApplicationUserManager(new UserStore<User>(db));
-             this.roleManager = roleManager; //new ApplicationRoleManager(new RoleStore<IdentityRole>(db));
+            this.userManager = userManager; //new ApplicationUserManager(new UserStore<User>(db));
+            this.roleManager = roleManager; //new ApplicationRoleManager(new RoleStore<IdentityRole>(db));
             this.profileManager = profileManager;
-        }
+            this.friendManager = friendManager;
+         }
 
         public ApplicationUserManager UserManager
         {
@@ -33,14 +37,14 @@ namespace SmlGround.DataAccess.Repositories
             get { return roleManager; }
         }
 
-        public IProfileRepository ProfileManager
+        public IRepository<Profile,string> ProfileManager
         {
             get { return profileManager; }
         }
 
-        public async Task SaveAsync()
+        public IRepository<Friend,string[]> FriendManager
         {
-            await db.SaveChangesAsync();
+            get { return friendManager; }
         }
 
         public void Dispose()
@@ -60,6 +64,7 @@ namespace SmlGround.DataAccess.Repositories
                     userManager.Dispose();
                     roleManager.Dispose();
                     profileManager.Dispose();
+                    friendManager.Dispose();
                 }
                 _disposed = true;
             }

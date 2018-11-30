@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using System;
+using System.Collections.Generic;
+using AutoMapper;
 using Microsoft.Owin.Security;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Infrastructure;
@@ -38,7 +40,7 @@ namespace SmlGround.Controllers
             if (ModelState.IsValid)
             {
                 var userDto = new UserConfirmDTO { Email = model.Email, Password = model.Password };
-                ClaimsIdentity claim = await UserService.Authenticate(userDto);
+                ClaimsIdentity claim = await UserService.AuthenticateAsync(userDto);
                 if (claim == null)
                 {
                     ModelState.AddModelError("", "Неверный логин или пароль.");
@@ -71,10 +73,12 @@ namespace SmlGround.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegistrationModel model)
         {
+            await SetInitialDataAsync();
             if (ModelState.IsValid)
             {
                 UserRegistrationDTO userDto = Mapper.Map<RegistrationModel, UserRegistrationDTO>(model);
-                string id = await UserService.Create(userDto);
+                //userDto.Role = "user";
+                string id = await UserService.CreateAsync(userDto);
                 if (id != null && id != "Пользователь с таким логином уже существует")
                 {
                     var confirmEmail = new ConfirmEmail(Url.Action("ConfirmEmail", "Account",
@@ -102,15 +106,14 @@ namespace SmlGround.Controllers
         }
 
         [AllowAnonymous]
-        [NonDirectAccess]
         public async Task<ActionResult> ConfirmEmail(string Token, string Email)
         {
-            OperationDetails operationDetails = await UserService.ConfirmEmail(Token, Email);
+            OperationDetails operationDetails = await UserService.ConfirmEmailAsync(Token, Email);
             
             if (operationDetails.Succeed)
             {
                 UserConfirmDTO userDto = new UserConfirmDTO() {Email = Email};
-                ClaimsIdentity claim = await UserService.AutoAuthenticate(userDto);
+                ClaimsIdentity claim = await UserService.AutoAuthenticateAsync(userDto);
                 if (claim == null)
                 {
                     ModelState.AddModelError("", "Неверный логин или пароль.");
@@ -129,6 +132,19 @@ namespace SmlGround.Controllers
                 return RedirectToAction("Confirm", "Account", new { Email = Email });
             return RedirectToAction("Confirm", "Account", new { Email = "" });
         
+        }
+        private async Task SetInitialDataAsync()
+        {
+            await UserService.SetInitialDataAsync(new UserRegistrationDTO
+            {
+                Email = "artemgontar16@gmail.com",
+                UserName = "artemgontar16",
+                Password = "123456",
+                Birthday = new DateTime(1999, 04, 30),
+                Name = "Artem",
+                Surname = "Gontar",
+                Role = "admin",
+            }, new List<string> { "user", "admin" });
         }
     }
 }

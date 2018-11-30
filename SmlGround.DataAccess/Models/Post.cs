@@ -9,7 +9,7 @@ namespace SmlGround.DataAccess.Models
     public class Post
     {
         public long PostId { get; set; }
-        public long? UserId { get; set; }
+        public string UserId { get; set; }
         public virtual User User { get; set; }
         public byte[] Image { get; set; }
         public string Text { get; set; }

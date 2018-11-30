@@ -20,13 +20,18 @@
             <input type="hidden" value="@Model.Id" name="Id">
             
             <div class="input-group">
-                <input class="input--style-1" type="text" placeholder="Имя" value="@Model.Name" name="Name">
+                @Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
+                @Html.EditorFor(m => m.Name, new { @class = "input--style-1", value = @Model.Name })
             </div>
             <div class="input-group">
-                <input class="input--style-1" type="text" placeholder="Фамилия" value="@Model.Surname" name="Surname">
+                @Html.ValidationMessageFor(m => m.Surname, null, new { @class = "text-danger" })
+                @Html.EditorFor(m => m.Surname, new { @class = "input--style-1", value = @Model.Surname })
+
             </div>
             <div class="input-group">
-                <input class="input--style-1" type="text" placeholder="День рождения" value="@Model.Birthday" name="Birthday">
+                @Html.ValidationMessageFor(m => m.Birthday, null, new { @class = "text-danger" })
+                @Html.EditorFor(m => m.Birthday, new { @class = "input--style-1", value=@Model.Birthday  })
+
             </div>
             <div class="input-group">
                 <input class="input--style-1" type="text" placeholder="Город" value="@Model.City" name="City">

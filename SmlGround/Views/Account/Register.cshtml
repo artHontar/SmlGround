@@ -18,38 +18,43 @@
             @Html.ValidationSummary(false)
 
             <div class="input-group">
-                <input class="input--style-1" type="text" placeholder="Email" name="Email">
+                @*@Html.ValidationMessageFor(m => m.Email, null, new { @class = "text-danger" })*@
+                @Html.EditorFor(m => m.Email, new { @class = "input--style-1" })
+
             </div>
             <div class="row row-space">
                 <div class="col-6">
                     <div class="input-group">
-                        <input class="input--style-1" type="text" placeholder="Name" name="Name">
+                        @Html.TextBoxFor(m => m.Name, new { @class = "input--style-1" })
+                        @Html.ValidationMessageFor(m => m.Name, null, new { @class = "text-danger" })
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="input-group">
-                        <input class="input--style-1" type="text" placeholder="Surname" name="Surname">
+                        @Html.TextBoxFor(m => m.Surname, new { @class = "input--style-1" })
+                        
                     </div>
                 </div>
             </div>
             <div class="row row-space">
                 <div class="col-7">
                     <div class="input-group">
-                        <input class="input--style-1" type="text" placeholder="Login" name="UserName">
+                        @Html.TextBoxFor(m => m.UserName, new { @class = "input--style-1" })
+ 
                     </div>
                 </div>
                 <div class="col-5">
                     <div class="input-group">
-                        <input class="input--style-1 js-datepicker" type="text" placeholder="День рождения" name="Birthday">
-                        <i class="zmdi zmdi-calendar-note input-icon js-btn-calendar"></i>
+                        @Html.EditorFor(m => m.Birthday, new { @class = "input--style-1" })
+ 
                     </div>
                 </div>
             </div>
             <div class="input-group">
-                <input class="input--style-1" type="text" placeholder="Пароль" name="Password">
+                @Html.PasswordFor(m => m.Password, new { @class = "input--style-1", placeholder = "Пароль" })
             </div>
             <div class="input-group">
-                <input class="input--style-1" type="text" placeholder="Подтвердите пароль" name="ConfirmPassword">
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "input--style-1", placeholder = "Подтвердите пароль" })
             </div>
             <div class="p-t-20">
                 <button class="btn btn--radius btn--green" type="submit">Зарегистрировать</button>

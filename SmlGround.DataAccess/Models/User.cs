@@ -14,17 +14,20 @@ namespace SmlGround.DataAccess.Models
         public User()
         {
             Posts = new List<Post>();
-            Friends = new List<Friend>();
             Dialogs = new List<Dialog>();
+            SentFriends = new List<Friend>();
+            ReceievedFriends = new List<Friend>();
         }
 
 
         public DateTime RegistrationTime { get; set; }
         public ICollection<Post> Posts { get; set; }
-        public ICollection<Friend> Friends { get; set; }
+        public ICollection<Friend> SentFriends { get; set; }
+        public ICollection<Friend> ReceievedFriends { get; set; }
+
         public ICollection<Dialog> Dialogs { get; set; }
         
-        public Profile Profile { get; set; }
+        public virtual Profile Profile { get; set; }
 
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<User> manager)
         {

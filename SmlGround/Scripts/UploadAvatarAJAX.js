@@ -16,20 +16,26 @@ input.addEventListener("change", function () {
             contentType: false,
             processData: false,
             type: "post",
-            complete: function ParseResponse(data) {
-                var img = document.querySelector("img[name='avatar']");
+            success: function ParseResponse(data) {
+                var img = document.querySelectorAll("img[name='avatar']");
                 var reader = new FileReader();
                 var base64Image;
                 reader.readAsDataURL(file);
                 reader.onload = function () {
                     base64Image = reader.result;
-                    img.setAttribute(
-                        'src', base64Image
-                    );
+                    for (let i = 0; i < img.length; i++)
+                    { 
+                        img[i].setAttribute(
+                            'src', base64Image
+                            );
+                    }
                     input.value = "";
-                }
-            }
 
+                }
+            },
+            error: function Fail() {
+                alert("Что-то не получилось, попробуй ещё");
+            }
         });
     };
 

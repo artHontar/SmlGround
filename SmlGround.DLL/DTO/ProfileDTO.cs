@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Enum;
 
 namespace SmlGround.DLL.DTO
 {
@@ -16,6 +17,19 @@ namespace SmlGround.DLL.DTO
         public string City { get; set; }
         public string PlaceOfStudy { get; set; }
         public string Skype { get; set; }
+        public FriendStatus FriendFlag { get; set; }
 
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
+        public override bool Equals(object obj)
+        {
+            if (!(obj is ProfileDTO))
+                throw new ArgumentException("obj is not an ProfileDTO");
+            var usr = obj as ProfileDTO;
+
+            return Id.Equals(usr.Id);
+        }
     }
 }

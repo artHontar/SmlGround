@@ -1,7 +1,10 @@
 ﻿@model IEnumerable<SmlGround.Models.ProfileViewModel>
+
 @{
-    ViewBag.Title = "People";
+    ViewBag.Title = "Friends";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 @section customcss {
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/Content/people.css">
@@ -14,7 +17,7 @@
             <div class="col-6 header">
                 <h3 class="text-muted prj-name">
                     <span class="fa fa-users fa-2x principal-title"></span>
-                    People list
+                    Friends list
                 </h3>
             </div>
             <div class="col-6">
@@ -33,7 +36,7 @@
             </div>
         </div>
         <div style="text-align: center; padding-top: 20px;" id="forUl">
-            @{ Html.RenderPartial("UsersList"); }
+            @{ Html.RenderPartial("FriendsList"); }
         </div>
     </div>
 </div>
@@ -41,14 +44,7 @@
     document.querySelector("button#search").addEventListener("click", function() {
         var input = document.querySelector("input#forSearch");
         if (input.value != "") {
-            $("#forUl").load('@Url.Action("FindPeople","Social")' + '?text=' + input.value);
+            $("#forUl").load('@Url.Action("FindFriends","Social")' + '?text=' + input.value);
         }
     },true);
-</script>
-<script type="text/javascript" src="~/Scripts/AJAXWorkWithFriends.js"></script>
-<script>
-    var label = document.querySelectorAll(".pull-right");
-    for (let i = 0; i < label.length; i++) {
-        label[i].addEventListener("click", function (event) { WorkWithFriend(event.target); }, true);
-    }
 </script>

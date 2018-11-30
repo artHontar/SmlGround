@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SmlGround.DataAccess.Models;
 using System.Data.Entity.ModelConfiguration;
-using SmlGround.DataAccess.Models;
 
 namespace SmlGround.DataAccess.Configuration
 {
@@ -13,6 +8,13 @@ namespace SmlGround.DataAccess.Configuration
         public FriendConfiguration()
         {
             ToTable("Friends");
+            HasKey(o => new { o.UserById, o.UserToId });//
+            HasRequired(c => c.UserBy).WithMany(o => o.SentFriends).HasForeignKey(m => m.UserById)
+                .WillCascadeOnDelete(false);
+            HasRequired(c => c.UserTo).WithMany(o => o.ReceievedFriends).HasForeignKey(m => m.UserToId)
+                .WillCascadeOnDelete(false);
+            //Property(o => o.UserOneId).IsRequired();
+            //Property(o => o.UserTwoId).IsRequired();
             Property(o => o.CreationTime)
                 .IsRequired();
             Property(o => o.Relationship)

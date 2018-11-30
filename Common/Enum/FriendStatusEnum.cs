@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SmlGround.DLL.Interfaces
-{
-    public interface IServiceCreator
+namespace Common.Enum
+{ 
+    public enum FriendStatus
     {
-        IUserService CreateUserService(string connection);
+        None,
+        Subscriber,
+        Signed,
+        Friend,
     }
 }

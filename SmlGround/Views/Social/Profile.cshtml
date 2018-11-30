@@ -1,4 +1,5 @@
-﻿@model SmlGround.Models.ProfileViewModel
+﻿@using Common.Enum
+@model SmlGround.Models.ProfileViewModel
 @{
     ViewBag.Title = "Profile";
 }
@@ -33,7 +34,7 @@
 
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-5">
                 <div class="profile-head">
                     <h5>
                         @Html.DisplayFor(x => x.Name) @Html.DisplayFor(x => x.Surname)
@@ -51,6 +52,34 @@
                 <div class="col-md-2">
                     @Html.ActionLink("Изменить", "Edit", new { id = Model.Id }, new { htmlAttributes = new { @class = "profile-edit-btn" } })
                 </div>
+            }
+            else
+            {
+                if (Model.FriendFlag == FriendStatus.None)
+                {
+                    <div id="friendship" class="col-md-3">
+                        <button type="button" id="@Model.Id" class="btn btn-primary add-friend" title="Добавить в друзья">Добавить в друзья</button>
+                    </div>
+                }
+                else if (Model.FriendFlag == FriendStatus.Subscriber)
+                {
+                    <div id="friendship" class="col-md-3">
+                        <button type="button" id="@Model.Id" class="btn btn-warning reject-friend" title="Отменить заявку">Отменить заявку</button>
+                    </div>
+                }
+                else if (Model.FriendFlag == FriendStatus.Signed)
+                {
+                    <div id="friendship" class="col-md-3">
+                        <button type="button" id="@Model.Id" class="btn btn-success approve-friend" title="Принять заявку">Принять заявку</button>
+                    </div>
+                }
+                else
+                {
+                    <div id="friendship" class="col-md-3">
+                        <button type="button" id="@Model.Id" class="btn btn-danger delete-friend" title="Удалить из друзей">Удалить из друзей</button>                         
+                    </div>
+                }
+                //add button add/remove friend
             }
         </div>
         <div class="row">
@@ -96,3 +125,8 @@
     <script>alert("@ViewBag.Success");</script>
 }
 <script src="~/Scripts/UploadAvatarAJAX.js"></script>
+<script src="~/Scripts/AJAXWorkWithFriends.js"></script>
+<script>
+    var friendship = document.querySelector('div#friendship>button');
+    friendship.addEventListener('click', function (event) { WorkWithFriend(event.target); },true);
+</script>
