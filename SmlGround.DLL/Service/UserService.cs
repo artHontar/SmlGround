@@ -1,17 +1,17 @@
-﻿using System;
-using AutoMapper;
+﻿using AutoMapper;
+using Common.Enum;
 using Microsoft.AspNet.Identity;
 using SmlGround.DataAccess.Interface;
 using SmlGround.DataAccess.Models;
-using Profile = SmlGround.DataAccess.Models.Profile;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Infrastructure;
 using SmlGround.DLL.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Common.Enum;
+using Profile = SmlGround.DataAccess.Models.Profile;
 
 namespace SmlGround.DLL.Service
 {
@@ -24,17 +24,17 @@ namespace SmlGround.DLL.Service
             database = unitOfWork;
         }
 
-        public async Task<UserDTO> GetUserById(string id)
+        public async Task<UserDTO> GetUserByIdAsync(string id)
         {
             var user = await database.UserManager.FindByIdAsync(id);
             var userDto = Mapper.Map<User,UserDTO>(user);
             return userDto; 
         }
 
-        public async Task<IEnumerable<ProfileDTO>> GetAllProfiles(string id,string search)
+        public async Task<IEnumerable<ProfileDTO>> GetAllProfilesAsync(string id,string search)
         {
             var profileList = Mapper.Map<IEnumerable<Profile>,List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
-            var list = await GetAllPeopleWithStatus(id, profileList);
+            var list = await GetAllPeopleWithStatusAsync(id, profileList);
             var listDto = list.Where(profile => string.IsNullOrEmpty(search) 
                                                 || profile.Name.Contains(search)
                                                 || profile.Surname.Contains(search))
@@ -42,17 +42,17 @@ namespace SmlGround.DLL.Service
             return listDto;
         }
 
-        public async Task<IEnumerable<ProfileDTO>> GetAllFriendsProfile(string id, string search)
+        public async Task<IEnumerable<ProfileDTO>> GetAllFriendsProfileAsync(string id, string search)
         {
             var profileList = Mapper.Map<IEnumerable<Profile>, List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
-            var list = await GetAllApprovedFriends(id);
+            var list = await GetAllApprovedFriendsAsync(id);
             var listDto = list.Where(profile => string.IsNullOrEmpty(search)
                                                 || profile.Name.Contains(search)
                                                 || profile.Surname.Contains(search))
                 .ToList();
             return listDto;
         }
-        public async Task<string> Create(UserRegistrationDTO userDto)
+        public async Task<string> CreateAsync(UserRegistrationDTO userDto)
         {
             var user = await database.UserManager.FindByEmailAsync(userDto.Email);
 
@@ -71,7 +71,7 @@ namespace SmlGround.DLL.Service
             return "Пользователь с таким логином уже существует";
         }
 
-        public async Task<int> UpdateProfile(ProfileWithoutAvatarDTO profileDto)
+        public async Task<int> UpdateProfileAsync(ProfileWithoutAvatarDTO profileDto)
         {
             var profile = database.ProfileManager.Get(profileDto.Id);
             
@@ -81,7 +81,7 @@ namespace SmlGround.DLL.Service
             return await database.ProfileManager.UpdateAsync(profile);
         }
 
-        public async Task UpdateAvatar(ProfileDTO profileDto)
+        public async Task UpdateAvatarAsync(ProfileDTO profileDto)
         {
             var profile = database.ProfileManager.Get(profileDto.Id);
             profile.Avatar = profileDto.Avatar;
@@ -89,7 +89,7 @@ namespace SmlGround.DLL.Service
             await database.ProfileManager.UpdateAsync(profile);
         }
 
-        public async Task AddFriendship(string idBy,string idTo)
+        public async Task AddFriendshipAsync(string idBy,string idTo)
         {
             var friendship = new Friend
             {
@@ -101,7 +101,7 @@ namespace SmlGround.DLL.Service
             await database.FriendManager.CreateAsync(friendship);  
         }
 
-        public async Task<int> UpdateFriendship(string idBy, string idTo, FriendStatus operation)
+        public async Task<int> UpdateFriendshipAsync(string idBy, string idTo, FriendStatus operation)
         {
             var friendship = await database.FriendManager.GetAsync(new[] { idBy, idTo }) ?? await database.FriendManager.GetAsync(new[] { idTo, idBy });
             friendship.FriendRequestFlag = operation;
@@ -109,7 +109,7 @@ namespace SmlGround.DLL.Service
             return await database.FriendManager.UpdateAsync(friendship);
         }
 
-        public async Task<int> DeleteFriendship(string idBy, string idTo)
+        public async Task<int> DeleteFriendshipAsync(string idBy, string idTo)
         {
             var friendship = await database.FriendManager.GetAsync(new[] { idBy, idTo });
             if (friendship != null)
@@ -123,14 +123,14 @@ namespace SmlGround.DLL.Service
             return await database.FriendManager.UpdateAsync(friendship);
         }
 
-        public async Task RejectFriendship(string idBy, string idTo)
+        public async Task RejectFriendshipAsync(string idBy, string idTo)
         {
             var friendship = await database.FriendManager.GetAsync(new[] { idBy, idTo }) ?? await database.FriendManager.GetAsync(new[] { idTo, idBy });
             
             await database.FriendManager.DeleteAsync(new [] { friendship.UserById,friendship.UserToId });
         }
 
-        private async Task<IEnumerable<ProfileDTO>> GetAllSubscribersFriends(string id)
+        private async Task<IEnumerable<ProfileDTO>> GetAllSubscribersFriendsAsync(string id)
         {
             var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
             
@@ -144,7 +144,7 @@ namespace SmlGround.DLL.Service
             
             return listDto == null? new List<ProfileDTO>() : listDto;
         }
-        private async Task<IEnumerable<ProfileDTO>> GetAllApprovedFriends(string id)
+        private async Task<IEnumerable<ProfileDTO>> GetAllApprovedFriendsAsync(string id)
         {
             var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
 
@@ -159,7 +159,7 @@ namespace SmlGround.DLL.Service
             return listDto == null ? new List<ProfileDTO>() : listDto;
         }
 
-        private async Task<IEnumerable<ProfileDTO>> GetAllSignersFriends(string id)
+        private async Task<IEnumerable<ProfileDTO>> GetAllSignersFriendsAsync(string id)
         {
             var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
 
@@ -174,9 +174,9 @@ namespace SmlGround.DLL.Service
             return listDto == null ? new List<ProfileDTO>() : listDto;
         }
 
-        private async Task<IEnumerable<ProfileDTO>> GetAllPeopleWithStatus(string id, IEnumerable<ProfileDTO> profileDto)
+        private async Task<IEnumerable<ProfileDTO>> GetAllPeopleWithStatusAsync(string id, IEnumerable<ProfileDTO> profileDto)
         {
-            var sentFriends = (await GetAllSubscribersFriends(id)).ToList();
+            var sentFriends = (await GetAllSubscribersFriendsAsync(id)).ToList();
             var list = profileDto.Except(sentFriends).ToList();
             foreach (var item in sentFriends)
             {
@@ -184,7 +184,7 @@ namespace SmlGround.DLL.Service
             }
             profileDto = list.Union(sentFriends).ToList();
 
-            var nonApprovedfriends = (await GetAllSignersFriends(id)).ToList();
+            var nonApprovedfriends = (await GetAllSignersFriendsAsync(id)).ToList();
             list = profileDto.Except(nonApprovedfriends).ToList();
             foreach (var item in nonApprovedfriends)
             {
@@ -192,7 +192,7 @@ namespace SmlGround.DLL.Service
             }
             profileDto = list.Union(nonApprovedfriends).ToList();
 
-            var approvedfriends = (await GetAllApprovedFriends(id)).ToList();
+            var approvedfriends = (await GetAllApprovedFriendsAsync(id)).ToList();
             list = profileDto.Except(approvedfriends).ToList();
             foreach (var item in approvedfriends)
             {
@@ -200,7 +200,7 @@ namespace SmlGround.DLL.Service
             }
             profileDto = list.Union(approvedfriends).ToList();
 
-            var currentUser = await FindProfile(id, null);
+            var currentUser = await FindProfileAsync(id, null);
 
             var profileDtoList = profileDto.ToList();
 
@@ -209,7 +209,7 @@ namespace SmlGround.DLL.Service
             return profileDtoList;
         }
 
-        public async Task<ClaimsIdentity> Authenticate(UserConfirmDTO userDto)
+        public async Task<ClaimsIdentity> AuthenticateAsync(UserConfirmDTO userDto)
         {
             ClaimsIdentity claim = null;
 
@@ -223,7 +223,7 @@ namespace SmlGround.DLL.Service
             return claim;
         }
 
-        public async Task<ClaimsIdentity> AutoAuthenticate(UserConfirmDTO userDto)
+        public async Task<ClaimsIdentity> AutoAuthenticateAsync(UserConfirmDTO userDto)
         {
             ClaimsIdentity claim = null;
 
@@ -236,7 +236,7 @@ namespace SmlGround.DLL.Service
             return claim;
         }
 
-        public async Task<ProfileDTO> FindProfile(string idCurrent, string id)
+        public async Task<ProfileDTO> FindProfileAsync(string idCurrent, string id)
         {
             Profile profile;
             ProfileDTO userProfileDto;
@@ -253,25 +253,41 @@ namespace SmlGround.DLL.Service
                 var friendship = await database.FriendManager.GetAsync(new[] { idCurrent, id });
                 if (friendship != null)
                 {
-                    if (friendship.FriendRequestFlag == FriendStatus.Subscriber)
-                        userProfileDto.FriendFlag = FriendStatus.Signed;
-                    else if (friendship.FriendRequestFlag == FriendStatus.Signed)
-                        userProfileDto.FriendFlag = FriendStatus.Subscriber;
-                    else
-                        userProfileDto.FriendFlag = friendship.FriendRequestFlag;
+                    switch (friendship.FriendRequestFlag)
+                    {
+                        case FriendStatus.Signed:
+                        {
+                            userProfileDto.FriendFlag = FriendStatus.Signed;
+                            break;
+                        }
+                        case FriendStatus.Subscriber:
+                        {
+                            userProfileDto.FriendFlag = FriendStatus.Subscriber;
+                            break;
+                        }
+                        case FriendStatus.Friend:
+                        {
+                            userProfileDto.FriendFlag = FriendStatus.Friend;
+                            break;
+                        }
+                        default:
+                        {
+                            userProfileDto.FriendFlag = friendship.FriendRequestFlag;
+                            break;
+                        }
+                    }
                 }
                 else
                 {
                     friendship = await database.FriendManager.GetAsync(new[] { id, idCurrent });
-                    if(friendship != null)
-                        userProfileDto.FriendFlag = friendship.FriendRequestFlag;
+                    userProfileDto.FriendFlag = friendship == null ? FriendStatus.None : friendship.FriendRequestFlag;
                 }
             }
             return userProfileDto;
             
         }
         
-        public async Task<OperationDetails> ConfirmEmail(string token,string email)
+        public async Task<OperationDetails> ConfirmEmailAsync(string token,string email)
         {
             var user = await database.UserManager.FindByIdAsync(token);
             if (user != null)
@@ -287,7 +303,7 @@ namespace SmlGround.DLL.Service
             return new OperationDetails(false, "Подтвердить Email не удалось", "");
         }
 
-        public async Task SetInitialData(UserRegistrationDTO adminDto, List<string> roles)
+        public async Task SetInitialDataAsync(UserRegistrationDTO adminDto, List<string> roles)
         {
             foreach (string roleName in roles)
             {
@@ -298,7 +314,7 @@ namespace SmlGround.DLL.Service
                     await database.RoleManager.CreateAsync(role);
                 }
             }
-            await Create(adminDto);
+            await CreateAsync(adminDto);
         }
 
         public void Dispose()
