@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmlGround.DataAccess.Repositories
 {
-    class ProfileRepository : IRepository<Profile>
+    class ProfileRepository : IRepository<Profile,string>
     {
         public SocialDbContext Database { get; }
         

@@ -17,19 +17,15 @@
                     People list
                 </h3>
             </div>
-            <div class="col-6 col-md-5 col-lg-4">
+            <div class="col-6">
                 <form class="card card-sm">
                     <div class="card-body row no-gutters align-items-center">
-                        <div class="col-auto">
-                            <i class="fas fa-search h4 text-body"></i>
-                        </div>
-                        <!--end of col-->
-                        <div class="col">
+                        <div class="col-9">
                             <input id="forSearch" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search">
                         </div>
                         <!--end of col-->
-                        <div class="col-auto">
-                            <button id="search" class="btn btn-lg btn-success" type="button">Search</button>
+                        <div style="padding-left: 10px" class="col-3">
+                            <button id="search" class="btn btn-success btn-lg" type="button">Search</button>
                         </div>
                         <!--end of col-->
                     </div>
@@ -40,7 +36,7 @@
             @{ Html.RenderPartial("UsersList"); }
         </div>
     </div>
-</div>    
+</div>
 <script>
     document.querySelector("button#search").addEventListener("click", function() {
         var input = document.querySelector("input#forSearch");
@@ -49,41 +45,10 @@
         }
     },true);
 </script>
+<script type="text/javascript" src="~/Scripts/AJAXWorkWithFriends.js"></script>
 <script>
     var label = document.querySelectorAll(".pull-right");
     for (let i = 0; i < label.length; i++) {
-        label[i].addEventListener("click",
-            function(event) {
-                var hrefClasses = event.target.classList;
-                var getOperation = "";
-                for (let i = 0; i < hrefClasses.length; i++) {
-                    if (hrefClasses[i] == "add-friend") {
-                        getOperation = "add-friend";
-                        break;
-                    }
-                    if (hrefClasses[i] == "send-message") {
-                        getOperation = "send-message";
-                        break;
-                    }
-                }
-                if (getOperation == "add-friend") {
-                    $.ajax({
-                        url: "/Social/AddFriend",
-                        data: {
-                            id: event.target.id
-                        },
-                        dataType: "json",
-                        type: "post",
-                        success: function Response(data) {
-                            alert("True");
-                        },
-                        error: function Response(data) {
-                            alert("False");
-                        }
-
-                    });
-                }
-            },
-            true);
+        label[i].addEventListener("click", function (event) { WorkWithFriend(event.target); }, true);
     }
 </script>

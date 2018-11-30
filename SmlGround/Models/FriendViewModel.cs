@@ -12,7 +12,7 @@ namespace SmlGround.Models
         public string UserById { get; set; }
         public string UserToId { get; set; }
         public DateTime CreationTime { get; set; }
-        public FriendRequestFlag FriendRequestFlag { get; set; }
+        public FriendStatus FriendRequestFlag { get; set; }
         public string Relationship { get; set; }
     }
 }

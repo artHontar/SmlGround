@@ -10,7 +10,7 @@ using SmlGround.DataAccess.Models;
 
 namespace SmlGround.DataAccess.Repositories
 {
-    class FriendRepository : IRepository<Friend>
+    class FriendRepository : IRepository<Friend,string[]>
     {
         public SocialDbContext Database { get; }
 
@@ -31,9 +31,9 @@ namespace SmlGround.DataAccess.Repositories
 
         }
 
-        public Friend Get(string id)
+        public Friend Get(string[] idBy)
         {
-            return Database.Set<Friend>().Find(id);
+            return Database.Set<Friend>().Find(idBy);
         }
 
         public int Update(Friend item)
@@ -42,9 +42,9 @@ namespace SmlGround.DataAccess.Repositories
             return Save();
         }
 
-        public void Delete(string id)
+        public void Delete(string[] idBy)
         {
-            Friend item = Database.Set<Friend>().Find(id);
+            Friend item = Database.Set<Friend>().Find(idBy);
             if (item != null)
             {
                 Database.Friends.Remove(item);
@@ -63,9 +63,9 @@ namespace SmlGround.DataAccess.Repositories
             return await Database.Set<Friend>().Include(o => o.UserBy).Include(o => o.UserTo).ToListAsync();
         }
 
-        public async Task<Friend> GetAsync(string id)
+        public async Task<Friend> GetAsync(string[] idBy)
         {
-            return await Database.Set<Friend>().FindAsync(id);
+            return await Database.Set<Friend>().FindAsync(idBy);
         }
 
         public async Task<int> UpdateAsync(Friend item)
@@ -74,9 +74,9 @@ namespace SmlGround.DataAccess.Repositories
             return await SaveAsync();
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string[] idBy)
         {
-            Friend item = Database.Friends.Find(id);
+            Friend item = Database.Friends.Find(idBy);
             if (item != null)
             {
                 Database.Set<Friend>().Remove(item);

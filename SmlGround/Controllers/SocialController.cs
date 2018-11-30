@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using AutoMapper;
+using Common.Enum;
 using NLog;
 using SmlGround.DataAccess.Models;
 using SmlGround.Filters;
@@ -40,17 +41,19 @@ namespace SmlGround.Controllers
         public async Task<ActionResult> UserProfile(string id)
         {
             id = id == null ? HttpContext.User.Identity.GetUserId() : id;
-        
+            var curentUserId = HttpContext.User.Identity.GetUserId();
             ViewBag.Success = TempData["Success"]?.ToString();
-
-            var profileDto = await _userService.FindProfile(id);
-
+            ProfileDTO profileDto;
+            if (id == curentUserId)
+                profileDto = await _userService.FindProfile(id, null);
+            else
+                profileDto = await _userService.FindProfile(curentUserId, id);
+            
             var profileViewModel = Mapper.Map<ProfileDTO, ProfileViewModel>(profileDto);
-        
             profileViewModel.IsCurrentUserProfile =
-                profileViewModel.Id.Equals(HttpContext.User.Identity.GetUserId()) ? true : false;
+                profileViewModel.Id.Equals(curentUserId) ? true : false;
 
-            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+            var currentUser = await _userService.FindProfile(curentUserId,null);
 
             ViewBag.Name = currentUser.Name;
             ViewBag.Avatar = currentUser.Avatar;
@@ -61,9 +64,9 @@ namespace SmlGround.Controllers
         {
             id = id == null ? HttpContext.User.Identity.GetUserId() : id;
 
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriends(id));
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriendsProfile(id,null));
 
-            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId(), null);
 
             ViewBag.Name = currentUser.Name;
             ViewBag.Avatar = currentUser.Avatar;
@@ -71,19 +74,60 @@ namespace SmlGround.Controllers
             return View("Friends",profileViewModelList);
         }
 
+        [NonDirectAccess]
+        public async Task<ActionResult> FindFriends(string text)
+        {
+            var currentUserId = HttpContext.User.Identity.GetUserId();
+
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriendsProfile(currentUserId, text));//new List<ProfileViewModel>();
+            if (profileViewModelList.Count > 0)
+            {
+                return PartialView("FriendsList", profileViewModelList);
+            }
+            return Content("По вашему запросу ничего не найдено");
+        }
+
         [HttpPost]
         public async Task<ActionResult> AddFriend(string id)
         {
-            await _userService.AddFriend(HttpContext.User.Identity.GetUserId(), id);
-            return new EmptyResult();
+            await _userService.AddFriendship(HttpContext.User.Identity.GetUserId(), id);
+            return Json("success");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> ApproveFriend(string id)
+        {
+            await _userService.UpdateFriendship(id, HttpContext.User.Identity.GetUserId(), FriendStatus.Friend);
+            return Json("success");
+        }
+
+        //[HttpPost]
+        //public async Task<ActionResult> ReturnFriend(string id)
+        //{
+        //    return Json("success");
+        //}
+
+        [HttpPost]
+        public async Task<ActionResult> RejectFriend(string id)
+        {
+            await _userService.RejectFriendship(HttpContext.User.Identity.GetUserId(), id);
+            return Json("success");
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> DeleteFriend(string id)
+        {
+            await _userService.DeleteFriendship(HttpContext.User.Identity.GetUserId(), id);
+            return Json("success");
         }
 
         public async Task<ActionResult> Edit(string id)
         {
-            var profileDto = await _userService.FindProfile(id);
+            var currentUserId = HttpContext.User.Identity.GetUserId();
+            var profileDto = await _userService.FindProfile(currentUserId, id);
             var editProfileViewModel = Mapper.Map<ProfileDTO, EditProfileViewModel>(profileDto);
             
-            var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
+            var currentUser = await _userService.FindProfile(currentUserId,null);
 
             ViewBag.Name = currentUser.Name;
             ViewBag.Avatar = currentUser.Avatar;
@@ -98,7 +142,7 @@ namespace SmlGround.Controllers
             {
                 var profileDto = Mapper.Map<EditProfileViewModel, ProfileWithoutAvatarDTO>(profileViewModel);
                 
-                await _userService.Update(profileDto);
+                await _userService.UpdateProfile(profileDto);
                 TempData["Success"] = "Изменения сохранены";
             }
             else
@@ -109,7 +153,7 @@ namespace SmlGround.Controllers
         [HttpPost]
         public async Task<ActionResult> EditAvatar(string id, HttpPostedFileBase uploadImage)
         {
-            var profileDto = await _userService.FindProfile(id);
+            var profileDto = await _userService.FindProfile(id,null);
 
             if (ModelState.IsValid && uploadImage != null)
             {
@@ -125,18 +169,10 @@ namespace SmlGround.Controllers
 
         public async Task<ActionResult> People()
         {
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(null));//new List<ProfileViewModel>();
             var currentUserId = HttpContext.User.Identity.GetUserId();
-            var friends = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriends(currentUserId));
-            var list = profileViewModelList.Except(friends).ToList();
-            foreach (var item in friends)
-            {
-                item.IsFriend = true;
-            }
-            profileViewModelList = list.Union(friends).ToList();
-            //Во View отображение друг не друг
-            var currentUser = await _userService.FindProfile(currentUserId);
-            profileViewModelList.Remove(Mapper.Map<ProfileDTO, ProfileViewModel>(currentUser));
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(currentUserId,null));
+
+            var currentUser = await _userService.FindProfile(currentUserId,null);
             ViewBag.Name = currentUser.Name;
             ViewBag.Avatar = currentUser.Avatar;
             return View("People", profileViewModelList);
@@ -145,23 +181,14 @@ namespace SmlGround.Controllers
         [NonDirectAccess]
         public async Task<ActionResult> FindPeople(string text)
         {
-            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(text));//new List<ProfileViewModel>();
+            var currentUserId = HttpContext.User.Identity.GetUserId();
+
+            var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(currentUserId,text));//new List<ProfileViewModel>();
             if (profileViewModelList.Count > 0)
             {
                 return PartialView("UsersList", profileViewModelList);
             }
             return Content("По вашему запросу ничего не найдено");
-        }
-        
-        //public async Task<ActionResult> Friends()
-        //{
-        //    var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfiles(null));//new List<ProfileViewModel>();
-
-        //    var currentUser = await _userService.FindProfile(HttpContext.User.Identity.GetUserId());
-
-        //    ViewBag.Name = currentUser.Name;
-        //    ViewBag.Avatar = currentUser.Avatar;
-        //    return View("Friends", profileViewModelList);
-        //}
+        }        
     }
 }

@@ -4,9 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Common.Enum;
 
 namespace SmlGround.Models
 {
+    
+
     public class ProfileViewModel
     {
         [ScaffoldColumn(false)]
@@ -25,22 +28,8 @@ namespace SmlGround.Models
         public string PlaceOfStudy { get; set; }
         [DataType(DataType.Text)]
         public string Skype { get; set; }
-        public Boolean IsFriend { get; set; }
+        public FriendStatus FriendFlag { get; set; }
         public Boolean IsCurrentUserProfile { get; set; }
-
-
-        public override int GetHashCode()
-        {
-            return this.Id.GetHashCode();
-        }
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ProfileViewModel))
-                throw new ArgumentException("obj is not an ProfileViewModel");
-            var usr = obj as ProfileViewModel;
-            if (usr == null)
-                return false;
-            return this.Id.Equals(usr.Id);
-        }
+        
     }
 }

@@ -7,18 +7,18 @@ using SmlGround.DataAccess.Models;
 
 namespace SmlGround.DataAccess.Interface
 {
-    public interface IRepository<T> : IDisposable
+    public interface IRepository<TType,PKType> : IDisposable
     {
-        void Create(T item);
-        IEnumerable<T> GetAll();
-        T Get(string id);
-        int Update(T profile);
-        void Delete(string id);
-        Task CreateAsync(T item);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetAsync(string id);
-        Task<int> UpdateAsync(T item);
-        Task DeleteAsync(string id);
+        void Create(TType item);
+        IEnumerable<TType> GetAll();
+        TType Get(PKType id);
+        int Update(TType profile);
+        void Delete(PKType id);
+        Task CreateAsync(TType item);
+        Task<IEnumerable<TType>> GetAllAsync();
+        Task<TType> GetAsync(PKType id);
+        Task<int> UpdateAsync(TType item);
+        Task DeleteAsync(PKType id);
         int Save();
         Task<int> SaveAsync();
     }

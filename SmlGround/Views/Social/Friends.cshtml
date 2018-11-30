@@ -9,7 +9,6 @@
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
     <link rel="stylesheet" href="~/Content/people.css">
 }
-<h2>Friends</h2>
 
 <div class="container bootstrap snippet">
 
@@ -18,22 +17,18 @@
             <div class="col-6 header">
                 <h3 class="text-muted prj-name">
                     <span class="fa fa-users fa-2x principal-title"></span>
-                    People list
+                    Friends list
                 </h3>
             </div>
-            <div class="col-6 col-md-5 col-lg-4">
+            <div class="col-6">
                 <form class="card card-sm">
                     <div class="card-body row no-gutters align-items-center">
-                        <div class="col-auto">
-                            <i class="fas fa-search h4 text-body"></i>
-                        </div>
-                        <!--end of col-->
-                        <div class="col">
+                        <div class="col-9">
                             <input id="forSearch" class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search">
                         </div>
                         <!--end of col-->
-                        <div class="col-auto">
-                            <button id="search" class="btn btn-lg btn-success" type="button">Search</button>
+                        <div style="padding-left: 10px" class="col-3">
+                            <button id="search" class="btn btn-success btn-lg" type="button">Search</button>
                         </div>
                         <!--end of col-->
                     </div>
@@ -41,8 +36,15 @@
             </div>
         </div>
         <div style="text-align: center; padding-top: 20px;" id="forUl">
-            @{ Html.RenderPartial("UsersList"); }
+            @{ Html.RenderPartial("FriendsList"); }
         </div>
     </div>
 </div>
-
+<script>
+    document.querySelector("button#search").addEventListener("click", function() {
+        var input = document.querySelector("input#forSearch");
+        if (input.value != "") {
+            $("#forUl").load('@Url.Action("FindFriends","Social")' + '?text=' + input.value);
+        }
+    },true);
+</script>

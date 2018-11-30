@@ -11,8 +11,8 @@ namespace SmlGround.DataAccess.Interface
     public interface IUnitOfWork : IDisposable
     {
         ApplicationUserManager UserManager { get; }
-        IRepository<Profile> ProfileManager { get; }
-        IRepository<Friend> FriendManager { get; }
+        IRepository<Profile,string> ProfileManager { get; }
+        IRepository<Friend,string[]> FriendManager { get; }
         ApplicationRoleManager RoleManager { get; }
     }
 }

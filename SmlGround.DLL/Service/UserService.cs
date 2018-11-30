@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System;
+using AutoMapper;
 using Microsoft.AspNet.Identity;
 using SmlGround.DataAccess.Interface;
 using SmlGround.DataAccess.Models;
@@ -6,12 +7,10 @@ using Profile = SmlGround.DataAccess.Models.Profile;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Infrastructure;
 using SmlGround.DLL.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Castle.Core.Internal;
 using Common.Enum;
 
 namespace SmlGround.DLL.Service
@@ -32,11 +31,25 @@ namespace SmlGround.DLL.Service
             return userDto; 
         }
 
-        public async Task<IEnumerable<ProfileDTO>> GetAllProfiles(string search)
+        public async Task<IEnumerable<ProfileDTO>> GetAllProfiles(string id,string search)
         {
-            var list = await database.ProfileManager.GetAllAsync();
-            List<ProfileDTO> listDto = list.Where(profile => string.IsNullOrEmpty(search) || profile.Name.Contains(search) || profile.Surname.Contains(search))
-            .Select(item => Mapper.Map<Profile ,ProfileDTO>(item)).ToList();
+            var profileList = Mapper.Map<IEnumerable<Profile>,List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
+            var list = await GetAllPeopleWithStatus(id, profileList);
+            var listDto = list.Where(profile => string.IsNullOrEmpty(search) 
+                                                || profile.Name.Contains(search)
+                                                || profile.Surname.Contains(search))
+            .ToList();
+            return listDto;
+        }
+
+        public async Task<IEnumerable<ProfileDTO>> GetAllFriendsProfile(string id, string search)
+        {
+            var profileList = Mapper.Map<IEnumerable<Profile>, List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
+            var list = await GetAllApprovedFriends(id);
+            var listDto = list.Where(profile => string.IsNullOrEmpty(search)
+                                                || profile.Name.Contains(search)
+                                                || profile.Surname.Contains(search))
+                .ToList();
             return listDto;
         }
         public async Task<string> Create(UserRegistrationDTO userDto)
@@ -52,18 +65,17 @@ namespace SmlGround.DLL.Service
                 await database.UserManager.AddToRoleAsync(user.Id, userDto.Role);
                 
                 var profile = new Profile { Id = user.Id, Name = userDto.Name, Surname = userDto.Surname, Birthday = userDto.Birthday };
-                //user.Profile = profile;
-                //await database.UserManager.UpdateAsync(user);
                 await database.ProfileManager.CreateAsync(profile);
                 return user.Id;
             }
             return "Пользователь с таким логином уже существует";
         }
 
-        public async Task<int> Update(ProfileWithoutAvatarDTO profileDto)
+        public async Task<int> UpdateProfile(ProfileWithoutAvatarDTO profileDto)
         {
             var profile = database.ProfileManager.Get(profileDto.Id);
-
+            
+            //update fields on profile
             Mapper.Map(profileDto, profile);
             
             return await database.ProfileManager.UpdateAsync(profile);
@@ -77,41 +89,125 @@ namespace SmlGround.DLL.Service
             await database.ProfileManager.UpdateAsync(profile);
         }
 
-        public async Task AddFriend(string idBy,string idTo)
+        public async Task AddFriendship(string idBy,string idTo)
         {
             var friendship = new Friend
             {
                 UserById = idBy,
                 UserToId = idTo,
                 CreationTime = DateTime.Now,
-                FriendRequestFlag = FriendRequestFlag.None
+                FriendRequestFlag = FriendStatus.Signed
             };
-            await database.FriendManager.CreateAsync(friendship);
-           
+            await database.FriendManager.CreateAsync(friendship);  
         }
-        
-        public async Task<IEnumerable<ProfileDTO>> GetAllFriends(string id)
+
+        public async Task<int> UpdateFriendship(string idBy, string idTo, FriendStatus operation)
         {
-            var listFriends = await database.FriendManager.GetAllAsync();
+            var friendship = await database.FriendManager.GetAsync(new[] { idBy, idTo }) ?? await database.FriendManager.GetAsync(new[] { idTo, idBy });
+            friendship.FriendRequestFlag = operation;
+
+            return await database.FriendManager.UpdateAsync(friendship);
+        }
+
+        public async Task<int> DeleteFriendship(string idBy, string idTo)
+        {
+            var friendship = await database.FriendManager.GetAsync(new[] { idBy, idTo });
+            if (friendship != null)
+                friendship.FriendRequestFlag = FriendStatus.Subscriber;
+            else
+            {
+                friendship = await database.FriendManager.GetAsync(new[] {idTo, idBy});
+                friendship.FriendRequestFlag = FriendStatus.Signed;
+            }
             
-            var user = listFriends.Where(o => o.FriendRequestFlag == FriendRequestFlag.None && o.UserById == id).Select(o => o.UserBy).FirstOrDefault();
-                                       //o => (o.UserById == id) || (o.UserToId == id && o.FriendRequestFlag == FriendRequestFlag.Approved)
-            var listUserFriends = user?.SentFriends.Select(o => o.UserTo.Profile).ToList();
-            var listDto = listUserFriends?.Select(item => Mapper.Map<Profile, ProfileDTO>(item)).ToList();
+            return await database.FriendManager.UpdateAsync(friendship);
+        }
+
+        public async Task RejectFriendship(string idBy, string idTo)
+        {
+            var friendship = await database.FriendManager.GetAsync(new[] { idBy, idTo }) ?? await database.FriendManager.GetAsync(new[] { idTo, idBy });
+            
+            await database.FriendManager.DeleteAsync(new [] { friendship.UserById,friendship.UserToId });
+        }
+
+        private async Task<IEnumerable<ProfileDTO>> GetAllSubscribersFriends(string id)
+        {
+            var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
+            
+            var user = listFriends.Where(o => o.UserById == id && (o.FriendRequestFlag == FriendStatus.Signed)).Select(o => o.UserBy).FirstOrDefault();
+            var listUserFriends1 = user?.SentFriends.Where(o => o.FriendRequestFlag == FriendStatus.Signed).Select(o => o.UserTo.Profile).ToList();
+
+            user = listFriends.Where(o => o.UserToId == id && (o.FriendRequestFlag == FriendStatus.Subscriber)).Select(o => o.UserTo).FirstOrDefault();
+            var listUserFriends2 = user?.ReceievedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Subscriber).Select(o => o.UserBy.Profile).ToList();
+            var list = listUserFriends1?.Concat(listUserFriends2 ?? new List<Profile>()) ?? listUserFriends2;
+            var listDto = list?.Select(item => Mapper.Map<Profile, ProfileDTO>(item)).ToList();
             
             return listDto == null? new List<ProfileDTO>() : listDto;
         }
+        private async Task<IEnumerable<ProfileDTO>> GetAllApprovedFriends(string id)
+        {
+            var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
 
-        //public async Task<IEnumerable<ProfileDTO>> GetAllApprovedFriends(string id)
-        //{
-        //    var listFriends = await database.FriendManager.GetAllAsync();
+            var user = listFriends.Where(o => o.UserToId == id).Select(o => o.UserTo).FirstOrDefault();
+            var listUserFriends1 = user?.ReceievedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Friend).Select(o => o.UserBy.Profile).ToList();
 
-        //    var user = listFriends.Where(o => o.FriendRequestFlag == FriendRequestFlag. && o.UserById == id).Select(o => o.UserBy).FirstOrDefault();
-        //    var listUserFriends = user?.SentFriends.Select(o => o.UserTo.Profile).ToList();
-        //    var listDto = listUserFriends?.Select(item => Mapper.Map<Profile, ProfileDTO>(item)).ToList();
+            user = listFriends.Where(o => o.UserById == id).Select(o => o.UserBy).FirstOrDefault();
+            var listUserFriends2 = user?.SentFriends.Where(o => o.FriendRequestFlag == FriendStatus.Friend).Select(o => o.UserTo.Profile).ToList();
+            var listUserFriends = listUserFriends1 == null ? listUserFriends2 : listUserFriends1.Union(listUserFriends2 == null ? new List<Profile>() : listUserFriends2);
+            var listDto = listUserFriends?.Select(item => Mapper.Map<Profile, ProfileDTO>(item)).ToList();
 
-        //    return listDto == null ? new List<ProfileDTO>() : listDto;
-        //}
+            return listDto == null ? new List<ProfileDTO>() : listDto;
+        }
+
+        private async Task<IEnumerable<ProfileDTO>> GetAllSignersFriends(string id)
+        {
+            var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
+
+            var user = listFriends.Where(o => o.UserToId == id).Select(o => o.UserTo).FirstOrDefault();
+            var listUserFriends1 = user?.ReceievedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Signed).Select(o => o.UserBy.Profile).ToList();
+
+            user = listFriends.Where(o => o.UserById == id).Select(o => o.UserBy).FirstOrDefault();
+            var listUserFriends2 = user?.SentFriends.Where(o => o.FriendRequestFlag == FriendStatus.Subscriber).Select(o => o.UserTo.Profile).ToList();
+            var list = listUserFriends1?.Concat(listUserFriends2 ?? new List<Profile>()) ?? listUserFriends2;
+            var listDto = list?.Select(item => Mapper.Map<Profile, ProfileDTO>(item)).ToList();
+
+            return listDto == null ? new List<ProfileDTO>() : listDto;
+        }
+
+        private async Task<IEnumerable<ProfileDTO>> GetAllPeopleWithStatus(string id, IEnumerable<ProfileDTO> profileDto)
+        {
+            var sentFriends = (await GetAllSubscribersFriends(id)).ToList();
+            var list = profileDto.Except(sentFriends).ToList();
+            foreach (var item in sentFriends)
+            {
+                item.FriendFlag = FriendStatus.Subscriber;
+            }
+            profileDto = list.Union(sentFriends).ToList();
+
+            var nonApprovedfriends = (await GetAllSignersFriends(id)).ToList();
+            list = profileDto.Except(nonApprovedfriends).ToList();
+            foreach (var item in nonApprovedfriends)
+            {
+                item.FriendFlag = FriendStatus.Signed;
+            }
+            profileDto = list.Union(nonApprovedfriends).ToList();
+
+            var approvedfriends = (await GetAllApprovedFriends(id)).ToList();
+            list = profileDto.Except(approvedfriends).ToList();
+            foreach (var item in approvedfriends)
+            {
+                item.FriendFlag = FriendStatus.Friend;
+            }
+            profileDto = list.Union(approvedfriends).ToList();
+
+            var currentUser = await FindProfile(id, null);
+
+            var profileDtoList = profileDto.ToList();
+
+            profileDtoList.Remove(currentUser);
+            
+            return profileDtoList;
+        }
 
         public async Task<ClaimsIdentity> Authenticate(UserConfirmDTO userDto)
         {
@@ -140,25 +236,47 @@ namespace SmlGround.DLL.Service
             return claim;
         }
 
-        public async Task<ProfileDTO> FindProfile(string Id)
+        public async Task<ProfileDTO> FindProfile(string idCurrent, string id)
         {
-            var profile = await database.ProfileManager.GetAsync(Id);
-            var userProfileDto = Mapper.Map<Profile,ProfileDTO>(profile);
-            
+            Profile profile;
+            ProfileDTO userProfileDto;
+            if (id == null)
+            {
+                profile = await database.ProfileManager.GetAsync(idCurrent);
+                userProfileDto = Mapper.Map<Profile, ProfileDTO>(profile);
+            }
+            else
+            {
+                profile = await database.ProfileManager.GetAsync(id);
+                userProfileDto = Mapper.Map<Profile, ProfileDTO>(profile);
+
+                var friendship = await database.FriendManager.GetAsync(new[] { idCurrent, id });
+                if (friendship != null)
+                {
+                    if (friendship.FriendRequestFlag == FriendStatus.Subscriber)
+                        userProfileDto.FriendFlag = FriendStatus.Signed;
+                    else if (friendship.FriendRequestFlag == FriendStatus.Signed)
+                        userProfileDto.FriendFlag = FriendStatus.Subscriber;
+                    else
+                        userProfileDto.FriendFlag = friendship.FriendRequestFlag;
+                }
+                else
+                {
+                    friendship = await database.FriendManager.GetAsync(new[] { id, idCurrent });
+                    if(friendship != null)
+                        userProfileDto.FriendFlag = friendship.FriendRequestFlag;
+                }
+            }
             return userProfileDto;
+            
         }
-
-        public async Task AddFriend()
+        
+        public async Task<OperationDetails> ConfirmEmail(string token,string email)
         {
-            //var friendship = new Friend{ UserOneId = "",UserTwoId = "", CreationTime = DateTime.Now };
-        }
-
-        public async Task<OperationDetails> ConfirmEmail(string Token,string Email)
-        {
-            var user = await database.UserManager.FindByIdAsync(Token);
+            var user = await database.UserManager.FindByIdAsync(token);
             if (user != null)
             {
-                if (user.Email == Email)
+                if (user.Email == email)
                 {
                     user.EmailConfirmed = true;
                     await database.UserManager.UpdateAsync(user);

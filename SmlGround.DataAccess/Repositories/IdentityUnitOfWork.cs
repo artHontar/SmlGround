@@ -13,12 +13,12 @@ namespace SmlGround.DataAccess.Repositories
         private SocialDbContext db { get; }
         private ApplicationUserManager userManager { get; }
         private ApplicationRoleManager roleManager { get; }
-        private IRepository<Profile> profileManager { get; }
-        private IRepository<Friend> friendManager { get; }
+        private IRepository<Profile,string> profileManager { get; }
+        private IRepository<Friend, string[]> friendManager { get; }
 
 
 
-        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager, IRepository<Profile> profileManager, IRepository<Friend> friendManager) 
+        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager, IRepository<Profile,string> profileManager, IRepository<Friend,string[]> friendManager) 
          {
             this.db = db;
             this.userManager = userManager; //new ApplicationUserManager(new UserStore<User>(db));
@@ -37,12 +37,12 @@ namespace SmlGround.DataAccess.Repositories
             get { return roleManager; }
         }
 
-        public IRepository<Profile> ProfileManager
+        public IRepository<Profile,string> ProfileManager
         {
             get { return profileManager; }
         }
 
-        public IRepository<Friend> FriendManager
+        public IRepository<Friend,string[]> FriendManager
         {
             get { return friendManager; }
         }

@@ -14,10 +14,10 @@ namespace SmlGround.DataAccess.Module
         protected override void Load(ContainerBuilder builder)
         {
             builder.RegisterType<ProfileRepository>()
-                .As<IRepository<Profile>>().InstancePerRequest();
+                .As<IRepository<Profile,string>>().InstancePerRequest();
 
             builder.RegisterType<FriendRepository>()
-                .As<IRepository<Friend>>().InstancePerRequest();
+                .As<IRepository<Friend,string[]>>().InstancePerRequest();
 
             //builder.RegisterType<UserStore<User>>().As<IUserStore<User>>();
             //builder.RegisterType<RoleStore<IdentityRole>>().As<IRoleStore<IdentityRole, string>>();

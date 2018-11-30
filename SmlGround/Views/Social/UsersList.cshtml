@@ -1,4 +1,6 @@
-﻿@model IEnumerable<SmlGround.Models.ProfileViewModel>
+﻿@using Common.Enum
+@using SmlGround.Models
+@model IEnumerable<SmlGround.Models.ProfileViewModel>
 <ul id="users" class="list-group">
     <li href="#" class="list-group-item title">
         All people
@@ -20,16 +22,24 @@
                 @item.Name @item.Surname
             </label>
             <label class="pull-right">
-                <a class="btn btn-success btn-xs glyphicon glyphicon-ok" href="/Social/Profile/@item.Id" title="Профиль"></a>
-                @if (item.IsFriend == false)
+                <a class="btn btn-success btn-xs glyphicon glyphicon-ok" href="/Social/Profile/@item.Id" title="Профиль">Профиль</a>
+                @if (item.FriendFlag == FriendStatus.None)
                 {
-                    <button type="button" id="@item.Id" class="btn btn-secondary add-friend btn-xs glyphicon glyphicon-trash" title="Добавить в друзья"></button>
+                <button type="button" id="@item.Id" class="btn btn-primary add-friend btn-sm glyphicon glyphicon-trash" title="Добавить в друзья">Добавить в друзья</button>
+                }
+                else if (item.FriendFlag == FriendStatus.Subscriber)
+                {
+                    <button type="button" id="@item.Id" class="btn btn-warning reject-friend btn-sm glyphicon glyphicon-trash" title="Отменить заявку">Отменить заявку</button>
+                }
+                else if (item.FriendFlag == FriendStatus.Signed)
+                {
+                    <button type="button" id="@item.Id" class="btn btn-success approve-friend btn-sm glyphicon glyphicon-trash" title="Принять заявку">Принять заявку</button>
                 }
                 else
                 {
-                    <button type="button" id="@item.Id" class="btn btn-danger delete-friend btn-xs glyphicon glyphicon-trash" title="Удалить из друзей"></button>
+                    <button type="button" id="@item.Id" class="btn btn-danger delete-friend btn-sm glyphicon glyphicon-trash" title="Удалить из друзей">Удалить из друзей</button>
                 }
-                <button type="button" id="@item.Id" class="btn btn-info send-message btn-xs glyphicon glyphicon glyphicon-comment" title="Написать"></button>
+                    <button type="button" id="@item.Id" class="btn btn-info send-message btn-sm glyphicon glyphicon glyphicon-comment" title="Написать">Написать</button>
             </label>
             <div class="break"></div>
         </li>
