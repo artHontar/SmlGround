@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmlGround.DLL", "SmlGround.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{04CC594C-8214-46C2-9C31-5B432054D4DE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmlGround.Tests.DLL", "SmlGround.Tests.DLL\SmlGround.Tests.DLL.csproj", "{37A0DE38-FBC3-4545-BEE7-3F15B763271F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{04CC594C-8214-46C2-9C31-5B432054D4DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04CC594C-8214-46C2-9C31-5B432054D4DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{04CC594C-8214-46C2-9C31-5B432054D4DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37A0DE38-FBC3-4545-BEE7-3F15B763271F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37A0DE38-FBC3-4545-BEE7-3F15B763271F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37A0DE38-FBC3-4545-BEE7-3F15B763271F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37A0DE38-FBC3-4545-BEE7-3F15B763271F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

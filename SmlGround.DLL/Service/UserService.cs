@@ -182,7 +182,7 @@ namespace SmlGround.DLL.Service
             {
                 item.FriendFlag = FriendStatus.Subscriber;
             }
-            profileDto = list.Union(sentFriends).ToList();
+            profileDto = list.Concat(sentFriends).ToList();
 
             var nonApprovedfriends = (await GetAllSignersFriendsAsync(id)).ToList();
             list = profileDto.Except(nonApprovedfriends).ToList();
@@ -190,7 +190,7 @@ namespace SmlGround.DLL.Service
             {
                 item.FriendFlag = FriendStatus.Signed;
             }
-            profileDto = list.Union(nonApprovedfriends).ToList();
+            profileDto = list.Concat(nonApprovedfriends).ToList();
 
             var approvedfriends = (await GetAllApprovedFriendsAsync(id)).ToList();
             list = profileDto.Except(approvedfriends).ToList();
@@ -198,7 +198,7 @@ namespace SmlGround.DLL.Service
             {
                 item.FriendFlag = FriendStatus.Friend;
             }
-            profileDto = list.Union(approvedfriends).ToList();
+            profileDto = list.Concat(approvedfriends).ToList();
 
             var currentUser = await FindProfileAsync(id, null);
 
