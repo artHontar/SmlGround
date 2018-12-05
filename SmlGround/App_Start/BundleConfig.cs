@@ -22,9 +22,32 @@ namespace SmlGround
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/popper").Include(
+                "~/Scripts/popper.js"));
+            
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/cssAuth").Include(
+                "~/Content/bootstrap.css",
+                "~/Content/site.css",
+                "~/Content/regAndLogin.css"));
+
+
+            bundles.Add(new ScriptBundle("~/bundles/profile").Include(
+                "~/Scripts/profile-*",
+                "~/Scripts/AJAXWorkWithFriends.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/people").Include(
+                "~/Scripts/AJAXWorkWithFriends.js",
+                "~/Scripts/searcherUpdatePeople.js",
+                "~/Scripts/clickableButton.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/friends").Include(
+                "~/Scripts/AJAXWorkWithFriends.js",
+                "~/Scripts/searcherUpdateFriends.js",
+                "~/Scripts/clickableButton.js"));
         }
     }
 }

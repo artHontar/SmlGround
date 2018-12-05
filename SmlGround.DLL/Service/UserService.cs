@@ -8,6 +8,7 @@ using SmlGround.DLL.Infrastructure;
 using SmlGround.DLL.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -44,7 +45,6 @@ namespace SmlGround.DLL.Service
 
         public async Task<IEnumerable<ProfileDTO>> GetAllFriendsProfileAsync(string id, string search)
         {
-            var profileList = Mapper.Map<IEnumerable<Profile>, List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
             var list = await GetAllApprovedFriendsAsync(id);
             var listDto = list.Where(profile => string.IsNullOrEmpty(search)
                                                 || profile.Name.Contains(search)
@@ -257,12 +257,12 @@ namespace SmlGround.DLL.Service
                     {
                         case FriendStatus.Signed:
                         {
-                            userProfileDto.FriendFlag = FriendStatus.Signed;
+                            userProfileDto.FriendFlag = FriendStatus.Subscriber;
                             break;
                         }
                         case FriendStatus.Subscriber:
                         {
-                            userProfileDto.FriendFlag = FriendStatus.Subscriber;
+                            userProfileDto.FriendFlag = FriendStatus.Signed;
                             break;
                         }
                         case FriendStatus.Friend:

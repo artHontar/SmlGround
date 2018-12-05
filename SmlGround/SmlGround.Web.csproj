@@ -236,6 +236,10 @@
     <Content Include="Content\people.css" />
     <Content Include="Content\profile.css" />
     <Content Include="Content\regAndLogin.css" />
+    <Content Include="Scripts\profile-buttonAddFriend.js" />
+    <Content Include="Scripts\clickableButton.js" />
+    <Content Include="Scripts\searcherUpdateFriends.js" />
+    <Content Include="Scripts\searcherUpdatePeople.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -290,7 +294,7 @@
     <Content Include="Scripts\umd\popper-utils.min.js" />
     <Content Include="Scripts\umd\popper.js" />
     <Content Include="Scripts\umd\popper.min.js" />
-    <Content Include="Scripts\UploadAvatarAJAX.js" />
+    <Content Include="Scripts\profile-UploadAvatarAJAX.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
