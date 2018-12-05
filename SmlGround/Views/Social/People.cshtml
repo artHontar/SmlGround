@@ -3,8 +3,7 @@
     ViewBag.Title = "People";
 }
 @section customcss {
-    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
-    <link rel="stylesheet" href="~/Content/people.css">
+   <link rel="stylesheet" href="~/Content/people.css">
 }
 
 <div class="container bootstrap snippet">
@@ -37,18 +36,4 @@
         </div>
     </div>
 </div>
-<script>
-    document.querySelector("button#search").addEventListener("click", function() {
-        var input = document.querySelector("input#forSearch");
-        if (input.value != "") {
-            $("#forUl").load('@Url.Action("FindPeople","Social")' + '?text=' + input.value);
-        }
-    },true);
-</script>
-<script type="text/javascript" src="~/Scripts/AJAXWorkWithFriends.js"></script>
-<script>
-    var label = document.querySelectorAll(".pull-right");
-    for (let i = 0; i < label.length; i++) {
-        label[i].addEventListener("click", function (event) { WorkWithFriend(event.target); }, true);
-    }
-</script>
+@Scripts.Render("~/bundles/people")

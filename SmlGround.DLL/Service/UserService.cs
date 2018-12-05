@@ -8,6 +8,7 @@ using SmlGround.DLL.Infrastructure;
 using SmlGround.DLL.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -34,7 +35,15 @@ namespace SmlGround.DLL.Service
         public async Task<IEnumerable<ProfileDTO>> GetAllProfilesAsync(string id,string search)
         {
             var profileList = Mapper.Map<IEnumerable<Profile>,List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
+            var startTime = System.Diagnostics.Stopwatch.StartNew();
             var list = await GetAllPeopleWithStatusAsync(id, profileList);
+            var resultTime = startTime.Elapsed;
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:000}",
+                resultTime.Hours,
+                resultTime.Minutes,
+                resultTime.Seconds,
+                resultTime.Milliseconds);
+            Debug.WriteLine(elapsedTime);
             var listDto = list.Where(profile => string.IsNullOrEmpty(search) 
                                                 || profile.Name.Contains(search)
                                                 || profile.Surname.Contains(search))
@@ -257,12 +266,12 @@ namespace SmlGround.DLL.Service
                     {
                         case FriendStatus.Signed:
                         {
-                            userProfileDto.FriendFlag = FriendStatus.Signed;
+                            userProfileDto.FriendFlag = FriendStatus.Subscriber;
                             break;
                         }
                         case FriendStatus.Subscriber:
                         {
-                            userProfileDto.FriendFlag = FriendStatus.Subscriber;
+                            userProfileDto.FriendFlag = FriendStatus.Signed;
                             break;
                         }
                         case FriendStatus.Friend:

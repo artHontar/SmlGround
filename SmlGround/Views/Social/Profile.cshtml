@@ -124,9 +124,4 @@
 {
     <script>alert("@ViewBag.Success");</script>
 }
-<script src="~/Scripts/UploadAvatarAJAX.js"></script>
-<script src="~/Scripts/AJAXWorkWithFriends.js"></script>
-<script>
-    var friendship = document.querySelector('div#friendship>button');
-    friendship.addEventListener('click', function (event) { WorkWithFriend(event.target); },true);
-</script>
+@Scripts.Render("~/bundles/profile")

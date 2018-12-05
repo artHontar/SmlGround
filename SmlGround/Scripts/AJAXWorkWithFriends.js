@@ -32,7 +32,6 @@
             dataType: "json",
             type: "post",
             success: function Response(data) {
-                alert("True");
                 target.classList.remove("add-friend");
                 target.classList.add("reject-friend");
                 target.title = "Отменить заявку";
@@ -41,7 +40,7 @@
                 target.classList.add("btn-warning");
             },
             error: function Response(data) {
-                alert("False");
+                alert("Ну, попробуй ещё раз");
             }
         });
     }
@@ -54,7 +53,6 @@
             dataType: "json",
             type: "post",
             success: function Response(data) {
-                alert("True");
                 target.classList.remove("approve-friend");
                 target.classList.add("delete-friend");
                 target.title = "Удалить из друзей";
@@ -63,7 +61,7 @@
                 target.classList.add("btn-danger");
             },
             error: function Response(data) {
-                alert("False");
+                alert("Ну, попробуй ещё раз");
             }
         });
     }
@@ -76,7 +74,6 @@
             dataType: "json",
             type: "post",
             success: function Response(data) {
-                alert("True");
                 target.classList.remove("reject-friend");
                 target.classList.add("add-friend");
                 target.title = "Добавить в друзья";
@@ -86,7 +83,7 @@
 
             },
             error: function Response(data) {
-                alert("False");
+                alert("Ну, попробуй ещё раз");
             }
         });
     }
@@ -99,7 +96,6 @@
             dataType: "json",
             type: "post",
             success: function Response(data) {
-                alert("True");
                 target.classList.remove("delete-friend");
                 target.classList.add("approve-friend");
                 target.title = "Принять заявку";
@@ -108,7 +104,7 @@
                 target.classList.add("btn-success");
             },
             error: function Response(data) {
-                alert("False");
+                alert("Ну, попробуй ещё раз");
             }
         });
     }
