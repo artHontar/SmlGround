@@ -35,15 +35,7 @@ namespace SmlGround.DLL.Service
         public async Task<IEnumerable<ProfileDTO>> GetAllProfilesAsync(string id,string search)
         {
             var profileList = Mapper.Map<IEnumerable<Profile>,List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
-            var startTime = System.Diagnostics.Stopwatch.StartNew();
             var list = await GetAllPeopleWithStatusAsync(id, profileList);
-            var resultTime = startTime.Elapsed;
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:000}",
-                resultTime.Hours,
-                resultTime.Minutes,
-                resultTime.Seconds,
-                resultTime.Milliseconds);
-            Debug.WriteLine(elapsedTime);
             var listDto = list.Where(profile => string.IsNullOrEmpty(search) 
                                                 || profile.Name.Contains(search)
                                                 || profile.Surname.Contains(search))
@@ -53,7 +45,6 @@ namespace SmlGround.DLL.Service
 
         public async Task<IEnumerable<ProfileDTO>> GetAllFriendsProfileAsync(string id, string search)
         {
-            var profileList = Mapper.Map<IEnumerable<Profile>, List<ProfileDTO>>(await database.ProfileManager.GetAllAsync());
             var list = await GetAllApprovedFriendsAsync(id);
             var listDto = list.Where(profile => string.IsNullOrEmpty(search)
                                                 || profile.Name.Contains(search)
