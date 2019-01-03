@@ -1,0 +1,25 @@
+﻿
+@{
+    ViewBag.Title = "Dialog";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="chatBody">
+    <div id="header"><h2>Dialog</h2></div>
+    <div class="row">
+        <div class="col-6 mb-3" style="overflow: auto; height: 400px; background-color: wheat;" id="chatroom">
+            <p>Hello</p>
+            <p>Hello(2)</p>
+        </div>
+        <div class="col-5 ml-3" id="chatusers">
+            <p><b>Все пользователи</b></p>
+        </div>
+    </div>
+    <div id="inputForm">
+        <input type="text" id="message" />
+        <input type="button" id="sendmessage" value="Отправить" />
+    </div>
+
+    
+</div>

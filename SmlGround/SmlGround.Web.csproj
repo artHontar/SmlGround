@@ -326,6 +326,7 @@
     <Content Include="Views\Shared\_LayoutAuth.cshtml" />
     <Content Include="Views\Social\Friends.cshtml" />
     <Content Include="Views\Social\FriendsList.cshtml" />
+    <Content Include="Views\Social\Dialog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

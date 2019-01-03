@@ -1,19 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using AutoMapper;
+﻿using AutoMapper;
 using Common.Enum;
 using Moq;
 using NUnit.Framework;
 using SmlGround.DataAccess.Interface;
 using SmlGround.DataAccess.Models;
 using SmlGround.DLL.DTO;
-using SmlGround.DLL.Interfaces;
 using SmlGround.DLL.Service;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Profile = SmlGround.DataAccess.Models.Profile;
 
 namespace SmlGround.Tests.DLL.Services

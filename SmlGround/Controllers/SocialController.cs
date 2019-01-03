@@ -1,25 +1,32 @@
-﻿using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using SmlGround.DataAccess.Identity;
+﻿using System;
+using AutoMapper;
+using Common.Enum;
+using Microsoft.AspNet.Identity;
 using SmlGround.DLL.DTO;
 using SmlGround.DLL.Interfaces;
 using SmlGround.DLL.Service;
+using SmlGround.Filters;
 using SmlGround.Models;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using AutoMapper;
-using Common.Enum;
-using NLog;
-using SmlGround.DataAccess.Models;
-using SmlGround.Filters;
+using System.Web.UI;
+using Newtonsoft.Json;
 
 namespace SmlGround.Controllers
 {
+    class Book
+    {
+        public string Name { get; set; }
+        public string Author { get; set; }
+        public int Year { get; set; }
+    }
+
     [Authorize]
     [LogInfo]
     [NullException]
@@ -37,23 +44,55 @@ namespace SmlGround.Controllers
         public async Task<ActionResult> UserProfile(string id)
         {
             id = id == null ? HttpContext.User.Identity.GetUserId() : id;
-            var curentUserId = HttpContext.User.Identity.GetUserId();
+            var currentUserId = HttpContext.User.Identity.GetUserId();
             ViewBag.Success = TempData["Success"]?.ToString();
             ProfileDTO profileDto;
-            if (id == curentUserId)
+            if (id == currentUserId)
                 profileDto = await _userService.FindProfileAsync(id, null);
             else
-                profileDto = await _userService.FindProfileAsync(curentUserId, id);
+                profileDto = await _userService.FindProfileAsync(currentUserId, id);
             
             var profileViewModel = Mapper.Map<ProfileDTO, ProfileViewModel>(profileDto);
             profileViewModel.IsCurrentUserProfile =
-                profileViewModel.Id.Equals(curentUserId) ? true : false;
+                profileViewModel.Id.Equals(currentUserId) ? true : false;
 
-            var currentUser = await _userService.FindProfileAsync(curentUserId,null);
+            if (Session["name"] == null || Session["avatar"] == null)
+            {
+                var currentUser = await _userService.FindProfileAsync(currentUserId, null);
+                Session["name"] = currentUser.Name;
+                Session["avatar"] = currentUser.Avatar;
+            }
+            ViewBag.Name = Session["name"];
+            ViewBag.Avatar = Session["avatar"];
+            //using (var client = new HttpClient())
+            //{
+            //    using (var request = new HttpRequestMessage(HttpMethod.Put, "http://localhost:9091/api/values/4"))
+            //    {
+            //        StringContent queryString = new StringContent("{\"Id\":\"4 \",\"Name\":\"rew\",\"Author\":\"qwe\",\"Year\":\"1999\"}", Encoding.UTF8, "application/json");
 
-            ViewBag.Name = currentUser.Name;
-            ViewBag.Avatar = currentUser.Avatar;
+            //        request.Content = queryString;
+                    
+
+            //        using (var response = await client.SendAsync(request))
+            //        {
+            //            var result = response.Content.ReadAsStringAsync();
+            //        }
+            //    }
+                
+                
+            //    //GET
+            //    //var _response = await client.GetAsync("http://localhost:9091/api/values/");
+            //    //var result = await _response.Content.ReadAsStringAsync();
+            //    //Book[] books = JsonConvert.DeserializeObject<Book[]>(result);
+            //    //ViewBag.Api = result;
+            //}
+
             return View(profileViewModel);
+        }
+
+        public async Task<ActionResult> Dialog()
+        {
+            return View();
         }
 
         public async Task<ActionResult> Friends(string id)
@@ -62,10 +101,14 @@ namespace SmlGround.Controllers
               
             var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllFriendsProfileAsync(id,null));
 
-            var currentUser = await _userService.FindProfileAsync(HttpContext.User.Identity.GetUserId(), null);
-
-            ViewBag.Name = currentUser.Name;
-            ViewBag.Avatar = currentUser.Avatar;
+            if (Session["name"] == null || Session["avatar"] == null)
+            {
+                var currentUser = await _userService.FindProfileAsync(id, null);
+                Session["name"] = currentUser.Name;
+                Session["avatar"] = currentUser.Avatar;
+            }
+            ViewBag.Name = Session["name"];
+            ViewBag.Avatar = Session["avatar"];
 
             return View("Friends",profileViewModelList);
         }
@@ -116,12 +159,15 @@ namespace SmlGround.Controllers
             var currentUserId = HttpContext.User.Identity.GetUserId();
             var profileDto = await _userService.FindProfileAsync(currentUserId, id);
             var editProfileViewModel = Mapper.Map<ProfileDTO, EditProfileViewModel>(profileDto);
-            
-            var currentUser = await _userService.FindProfileAsync(currentUserId,null);
 
-            ViewBag.Name = currentUser.Name;
-            ViewBag.Avatar = currentUser.Avatar;
-
+            if (Session["name"] == null || Session["avatar"] == null)
+            {
+                var currentUser = await _userService.FindProfileAsync(currentUserId, null);
+                Session["name"] = currentUser.Name;
+                Session["avatar"] = currentUser.Avatar;
+            }
+            ViewBag.Name = Session["name"];
+            ViewBag.Avatar = Session["avatar"];
             return View("Edit",editProfileViewModel);
         }
 
@@ -137,6 +183,7 @@ namespace SmlGround.Controllers
             }
             else
                 TempData["Success"] = "Не удалось сохранить изменения";
+            Session.Clear();
             return RedirectToAction("Profile", "Social");
         }
 
@@ -151,20 +198,29 @@ namespace SmlGround.Controllers
                 
                 profileDto.Avatar = binaryFormatter.Convert();
                 await _userService.UpdateAvatarAsync(profileDto);
+                Session.Clear();
                 return Json(profileDto.Avatar);
             }
 
             return new EmptyResult();
         }
-
+        
+        [OutputCache(Duration = 30,Location = OutputCacheLocation.Client)]
         public async Task<ActionResult> People()
         {
+            Response.Cache.SetExpires(DateTime.Now.AddSeconds(30));
+            Response.Cache.SetCacheability(HttpCacheability.Public);
             var currentUserId = HttpContext.User.Identity.GetUserId();
             var profileViewModelList = Mapper.Map<IEnumerable<ProfileDTO>, List<ProfileViewModel>>(await _userService.GetAllProfilesAsync(currentUserId,null));
 
-            var currentUser = await _userService.FindProfileAsync(currentUserId,null);
-            ViewBag.Name = currentUser.Name;
-            ViewBag.Avatar = currentUser.Avatar;
+            if (Session["name"] == null || Session["avatar"] == null)
+            {
+                var currentUser = await _userService.FindProfileAsync(currentUserId, null);
+                Session["name"] = currentUser.Name;
+                Session["avatar"] = currentUser.Avatar;
+            }
+            ViewBag.Name = Session["name"];
+            ViewBag.Avatar = Session["avatar"];
             return View("People", profileViewModelList);
         }
 

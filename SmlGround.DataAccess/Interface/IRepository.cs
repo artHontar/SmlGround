@@ -12,7 +12,7 @@ namespace SmlGround.DataAccess.Interface
         void Create(TType item);
         IEnumerable<TType> GetAll();
         TType Get(PKType id);
-        int Update(TType profile);
+        int Update(TType item);
         void Delete(PKType id);
         Task CreateAsync(TType item);
         Task<IEnumerable<TType>> GetAllAsync();

@@ -25,7 +25,5 @@ namespace SmlGround.DLL.DTO
         public ICollection<Friend> SentFriends { get; set; }
         public ICollection<Friend> ReceievedFriends { get; set; }
         public virtual Profile Profile { get; set; }
-
     }
-
 }
