@@ -15,11 +15,9 @@ namespace SmlGround.DataAccess.Configuration
                 .IsOptional();
             HasRequired(c => c.Profile)
                 .WithRequiredPrincipal(o => o.User);
-            HasMany(c => c.Dialogs)
-                .WithRequired(o => o.UserOne);
             HasMany(c => c.SentFriends)
                 .WithRequired(o => o.UserBy);
-            HasMany(c => c.ReceievedFriends)
+            HasMany(c => c.ReceivedFriends)
                 .WithRequired(o => o.UserTo);
             HasMany(c => c.Posts)
                 .WithOptional(o => o.User);

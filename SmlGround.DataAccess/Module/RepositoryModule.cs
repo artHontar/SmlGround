@@ -19,6 +19,13 @@ namespace SmlGround.DataAccess.Module
             builder.RegisterType<FriendRepository>()
                 .As<IRepository<Friend,string[]>>().InstancePerRequest();
 
+            builder.RegisterType<DialogRepository>()
+                .As<IRepository<Dialog, long>>().InstancePerRequest();
+
+            builder.RegisterType<MessageRepository>()
+                .As<IRepository<Message, long>>().InstancePerRequest();
+
+            
             //builder.RegisterType<UserStore<User>>().As<IUserStore<User>>();
             //builder.RegisterType<RoleStore<IdentityRole>>().As<IRoleStore<IdentityRole, string>>();
 

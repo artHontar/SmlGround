@@ -12,7 +12,12 @@ namespace SmlGround.DataAccess.Configuration
     {
         public MessageConfiguration()
         {
-            ToTable("Messages").HasKey(o => o.MyId);
+            ToTable("Messages").HasKey(o => o.MessageId);
+            HasRequired(c => c.Sender).WithMany(o => o.MyMessage).HasForeignKey(m => m.SenderId)
+                .WillCascadeOnDelete(false);
+            HasRequired(c => c.Receiver).WithMany(o => o.ToMeMessage).HasForeignKey(m => m.ReceiverId)
+                .WillCascadeOnDelete(false);
+
             Property(o => o.CreationTime)
                 .IsRequired();
             Property(o => o.Text)

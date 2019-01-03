@@ -28,6 +28,12 @@ namespace SmlGround.App_Start
                 cfg.CreateMap<Friend, FriendDTO>();
                 cfg.CreateMap<FriendDTO, Friend>();
 
+                //Message
+                cfg.CreateMap<MessageDTO, Message>();
+                cfg.CreateMap<Message, MessageDTO>();
+
+                cfg.CreateMap<MessageViewModel, MessageDTO>();
+                cfg.CreateMap<MessageDTO, MessageViewModel>();
 
             });
         }

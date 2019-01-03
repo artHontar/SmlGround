@@ -13,6 +13,8 @@ namespace SmlGround.DataAccess.Interface
         ApplicationUserManager UserManager { get; }
         IRepository<Profile,string> ProfileManager { get; }
         IRepository<Friend,string[]> FriendManager { get; }
+        IRepository<Message, Int64> MessageManager { get; }
+        IRepository<Dialog, Int64> DialogManager { get; }
         ApplicationRoleManager RoleManager { get; }
     }
 }

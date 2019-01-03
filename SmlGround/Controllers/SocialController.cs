@@ -90,9 +90,32 @@ namespace SmlGround.Controllers
             return View(profileViewModel);
         }
 
-        public async Task<ActionResult> Dialog()
+        public async Task<ActionResult> Dialog(string id)
         {
-            return View();
+            id = id == null ? HttpContext.User.Identity.GetUserId() : id;
+            var currentUserId = HttpContext.User.Identity.GetUserId();
+
+            var messages = await _userService.GetMessagesAsync(currentUserId ,id);
+
+            var messagesViewModel = Mapper.Map<IEnumerable<MessageDTO>, IEnumerable<MessageViewModel>>(messages);
+            var profileDto = (await _userService.FindProfileAsync(id, null));
+            ViewBag.RecieverName = profileDto.Name + " " + profileDto.Surname;
+            ViewBag.RecieverId = id;
+            foreach (var item in messagesViewModel)
+            {
+                item.Read = true;
+            }
+            return View(messagesViewModel);
+        }
+
+        public async Task<ActionResult> SendMessage(string id, string message)
+        {
+            id = id == null ? HttpContext.User.Identity.GetUserId() : id;
+            var currentUserId = HttpContext.User.Identity.GetUserId();
+
+            var messageDto = await _userService.CreateMessageAsync(currentUserId, id, message);
+            
+            return Json(messageDto);
         }
 
         public async Task<ActionResult> Friends(string id)

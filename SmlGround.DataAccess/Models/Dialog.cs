@@ -11,15 +11,13 @@ namespace SmlGround.DataAccess.Models
         public Dialog()
         {
             Messages = new List<Message>();
+            Users = new List<User>();
+            
         }
 
         public long DialogId { get; set; }
-        public string UserOneId { get; set; }
-        public string UserTwoId { get; set; }
-        public User UserOne { get; set; }
-        public User UserTwo { get; set; }
+        public virtual ICollection<User> Users { get; set; }
         public DateTime CreationTime { get; set; }
-
         public virtual ICollection<Message> Messages { get; set; }
     }
 }

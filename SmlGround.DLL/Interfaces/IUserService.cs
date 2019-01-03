@@ -28,5 +28,7 @@ namespace SmlGround.DLL.Interfaces
         Task<IEnumerable<ProfileDTO>> GetAllProfilesAsync(string id, string search);
         Task<IEnumerable<ProfileDTO>> GetAllFriendsProfileAsync(string id, string search);
         Task SetInitialDataAsync(UserRegistrationDTO adminDto, List<string> roles);
+        Task<MessageDTO> CreateMessageAsync(string senderId, string receiverId, string text);
+        Task<IEnumerable<MessageDTO>> GetMessagesAsync(string current, string id);
     }
 }

@@ -11,7 +11,7 @@ namespace SmlGround.DataAccess.Configuration
             HasKey(o => new { o.UserById, o.UserToId });//
             HasRequired(c => c.UserBy).WithMany(o => o.SentFriends).HasForeignKey(m => m.UserById)
                 .WillCascadeOnDelete(false);
-            HasRequired(c => c.UserTo).WithMany(o => o.ReceievedFriends).HasForeignKey(m => m.UserToId)
+            HasRequired(c => c.UserTo).WithMany(o => o.ReceivedFriends).HasForeignKey(m => m.UserToId)
                 .WillCascadeOnDelete(false);
             //Property(o => o.UserOneId).IsRequired();
             //Property(o => o.UserTwoId).IsRequired();

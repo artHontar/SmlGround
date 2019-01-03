@@ -10,42 +10,29 @@ namespace SmlGround.DataAccess.Repositories
 {
     public class IdentityUnitOfWork : IUnitOfWork
     {
-        private SocialDbContext db { get; }
-        private ApplicationUserManager userManager { get; }
-        private ApplicationRoleManager roleManager { get; }
-        private IRepository<Profile,string> profileManager { get; }
-        private IRepository<Friend, string[]> friendManager { get; }
+        private readonly SocialDbContext db;
 
-
-
-        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager, IRepository<Profile,string> profileManager, IRepository<Friend,string[]> friendManager) 
+        public IdentityUnitOfWork(SocialDbContext db, ApplicationUserManager userManager, ApplicationRoleManager roleManager, IRepository<Profile,string> profileManager, IRepository<Friend,string[]> friendManager, IRepository<Message, long> messageManager, IRepository<Dialog, long> dialogManager) 
          {
             this.db = db;
-            this.userManager = userManager; //new ApplicationUserManager(new UserStore<User>(db));
-            this.roleManager = roleManager; //new ApplicationRoleManager(new RoleStore<IdentityRole>(db));
-            this.profileManager = profileManager;
-            this.friendManager = friendManager;
+            this.UserManager = userManager; //new ApplicationUserManager(new UserStore<User>(db));
+            this.RoleManager = roleManager; //new ApplicationRoleManager(new RoleStore<IdentityRole>(db));
+            this.ProfileManager = profileManager;
+            this.FriendManager = friendManager;
+            this.DialogManager = dialogManager;
+            this.MessageManager = messageManager;
          }
 
-        public ApplicationUserManager UserManager
-        {
-            get { return userManager; }
-        }
-        
-        public ApplicationRoleManager RoleManager
-        {
-            get { return roleManager; }
-        }
+        public ApplicationUserManager UserManager { get; }
 
-        public IRepository<Profile,string> ProfileManager
-        {
-            get { return profileManager; }
-        }
+        public ApplicationRoleManager RoleManager { get; }
 
-        public IRepository<Friend,string[]> FriendManager
-        {
-            get { return friendManager; }
-        }
+        public IRepository<Profile, string> ProfileManager { get; }
+
+        public IRepository<Friend, string[]> FriendManager { get; }
+
+        public IRepository<Message, Int64> MessageManager { get; }
+        public IRepository<Dialog, Int64> DialogManager { get; }
 
         public void Dispose()
         {
@@ -61,10 +48,12 @@ namespace SmlGround.DataAccess.Repositories
             {
                 if (disposing)
                 {
-                    userManager.Dispose();
-                    roleManager.Dispose();
-                    profileManager.Dispose();
-                    friendManager.Dispose();
+                    UserManager.Dispose();
+                    RoleManager.Dispose();
+                    ProfileManager.Dispose();
+                    FriendManager.Dispose();
+                    DialogManager.Dispose();
+                    MessageManager.Dispose();
                 }
                 _disposed = true;
             }

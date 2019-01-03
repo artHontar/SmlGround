@@ -61,6 +61,7 @@ namespace SmlGround.Controllers
         public ActionResult Logout()
         {
             AuthenticationManager.SignOut();
+            Session.Clear();
             return RedirectToAction("Login", "Account");
         }
 
@@ -73,7 +74,7 @@ namespace SmlGround.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegistrationModel model)
         {
-            await SetInitialDataAsync();
+            //await SetInitialDataAsync();
             if (ModelState.IsValid)
             {
                 UserRegistrationDTO userDto = Mapper.Map<RegistrationModel, UserRegistrationDTO>(model);

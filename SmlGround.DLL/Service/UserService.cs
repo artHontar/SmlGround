@@ -138,7 +138,7 @@ namespace SmlGround.DLL.Service
             var listUserFriends1 = user?.SentFriends.Where(o => o.FriendRequestFlag == FriendStatus.Signed).Select(o => o.UserTo.Profile).ToList();
 
             user = listFriends.Where(o => o.UserToId == id && (o.FriendRequestFlag == FriendStatus.Subscriber)).Select(o => o.UserTo).FirstOrDefault();
-            var listUserFriends2 = user?.ReceievedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Subscriber).Select(o => o.UserBy.Profile).ToList();
+            var listUserFriends2 = user?.ReceivedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Subscriber).Select(o => o.UserBy.Profile).ToList();
             var list = listUserFriends1?.Concat(listUserFriends2 ?? new List<Profile>()) ?? listUserFriends2;
             var listDto = list?.Select(item => Mapper.Map<Profile, ProfileDTO>(item)).ToList();
             
@@ -149,7 +149,7 @@ namespace SmlGround.DLL.Service
             var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
 
             var user = listFriends.Where(o => o.UserToId == id).Select(o => o.UserTo).FirstOrDefault();
-            var listUserFriends1 = user?.ReceievedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Friend).Select(o => o.UserBy.Profile).ToList();
+            var listUserFriends1 = user?.ReceivedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Friend).Select(o => o.UserBy.Profile).ToList();
 
             user = listFriends.Where(o => o.UserById == id).Select(o => o.UserBy).FirstOrDefault();
             var listUserFriends2 = user?.SentFriends.Where(o => o.FriendRequestFlag == FriendStatus.Friend).Select(o => o.UserTo.Profile).ToList();
@@ -164,7 +164,7 @@ namespace SmlGround.DLL.Service
             var listFriends = (await database.FriendManager.GetAllAsync()).ToList();
 
             var user = listFriends.Where(o => o.UserToId == id).Select(o => o.UserTo).FirstOrDefault();
-            var listUserFriends1 = user?.ReceievedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Signed).Select(o => o.UserBy.Profile).ToList();
+            var listUserFriends1 = user?.ReceivedFriends.Where(o => o.FriendRequestFlag == FriendStatus.Signed).Select(o => o.UserBy.Profile).ToList();
 
             user = listFriends.Where(o => o.UserById == id).Select(o => o.UserBy).FirstOrDefault();
             var listUserFriends2 = user?.SentFriends.Where(o => o.FriendRequestFlag == FriendStatus.Subscriber).Select(o => o.UserTo.Profile).ToList();
@@ -301,6 +301,46 @@ namespace SmlGround.DLL.Service
                 return new OperationDetails(false, "Повторите", "");
             }
             return new OperationDetails(false, "Подтвердить Email не удалось", "");
+        }
+
+
+        public async Task CreateDialog(string currentId, string otherId)
+        {
+            User user1 = await database.UserManager.FindByIdAsync(currentId);
+            User user2 = await database.UserManager.FindByIdAsync(currentId);
+            Dialog dialog = new Dialog
+            {
+                CreationTime = DateTime.Now
+            };
+            dialog.Users.Add(user1);
+            dialog.Users.Add(user2);
+            await database.DialogManager.CreateAsync(dialog);
+        }
+
+        public async Task<IEnumerable<MessageDTO>> GetMessagesAsync(string senderId, string receiverId)
+        {
+            var messages = await database.MessageManager.GetAllAsync();
+            messages = messages.Where(o => (o.SenderId == senderId && o.ReceiverId == receiverId) || (o.SenderId == receiverId && o.ReceiverId == senderId)).ToList();
+            
+            IEnumerable<MessageDTO> messagesDto = Mapper.Map<IEnumerable<Message>, IEnumerable<MessageDTO>>(messages);
+
+            return messagesDto;
+        }
+
+        public async Task<MessageDTO> CreateMessageAsync(string senderId, string receiverId, string text)
+        {
+            var message = new Message
+            {
+                SenderId = senderId,
+                ReceiverId = receiverId,
+                Text = text,
+                Read = false,
+                CreationTime = DateTime.Now
+            };
+            await database.MessageManager.CreateAsync(message);
+
+            var messageDto = Mapper.Map<Message,MessageDTO>(message);
+            return messageDto;
         }
 
         public async Task SetInitialDataAsync(UserRegistrationDTO adminDto, List<string> roles)

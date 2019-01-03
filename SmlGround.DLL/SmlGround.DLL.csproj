@@ -227,6 +227,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DTO\FriendDTO.cs" />
+    <Compile Include="DTO\MessageDTO.cs" />
     <Compile Include="DTO\ProfileDTO.cs" />
     <Compile Include="DTO\ProfileWithoutAvatarDTO.cs" />
     <Compile Include="DTO\UserConfirmDTO.cs" />
